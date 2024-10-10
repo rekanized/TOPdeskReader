@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\DataController;
 
 Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/incidents', [IncidentController::class, 'index']);
+Route::get('/tickets', [DataController::class, 'index']);
