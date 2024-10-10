@@ -21,18 +21,18 @@ class DataController extends Controller
         // Get all tickets
         $dbQuery = $conn->prepare("SELECT TOP 10 unid AS topdesk_id,naam AS id,'ticket' AS type FROM incident");
         $dbQuery->execute();
-        array_push($allTickets,$dbQuery->fetchAll(PDO::FETCH_ASSOC));
+        $allTickets = array_merge($allTickets,$dbQuery->fetchAll(PDO::FETCH_ASSOC));
 
         // Get all changes
         $dbQuery = $conn->prepare("SELECT TOP 10 unid AS topdesk_id,[number] AS id,'change' AS type FROM change");
         $dbQuery->execute();
-        array_push($allTickets,$dbQuery->fetchAll(PDO::FETCH_ASSOC));
+        $allTickets = array_merge($allTickets,$dbQuery->fetchAll(PDO::FETCH_ASSOC));
 
         // Get all changeactivities
         $dbQuery = $conn->prepare("SELECT TOP 10 unid AS topdesk_id,[number] AS id,'changeactivity' AS type FROM changeactivity");
         $dbQuery->execute();
-        array_push($allTickets,$dbQuery->fetchAll(PDO::FETCH_ASSOC));
+        $allTickets = array_merge($allTickets,$dbQuery->fetchAll(PDO::FETCH_ASSOC));
 
-        return view('api.search', compact('allTickets'));
+        return view('api.search', ['allTickets' => $allTickets]);
     }
 }
