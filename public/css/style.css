@@ -1,0 +1,19 @@
+html {
+    min-height: 100vh;
+    scroll-behavior: smooth;
+}
+body {
+    min-height: 100vh;
+    margin: 0px;
+    font-family: 'Open Sans';
+}
+header {
+    position: fixed;
+    width: 100vw;
+    z-index: 10;
+}
+main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 110px);
+}
