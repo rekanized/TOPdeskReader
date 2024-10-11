@@ -7,4 +7,6 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/tickets', [DataController::class, 'index']);
+Route::get('/tickets', [DataController::class, 'search']);
+
+Route::get('/tickets/{id}', [DataController::class, 'show']);
