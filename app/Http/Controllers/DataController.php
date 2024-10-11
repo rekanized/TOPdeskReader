@@ -77,7 +77,7 @@ class DataController extends Controller
             if ($ticket) {
                 if ($ticket['type'] == 'ticket') {
                     $dbQuery = $dbConnection->prepare(
-                        "SELECT TOP 1 * 
+                        "SELECT * 
                         FROM incident
                         WHERE naam = :id"
                     );
@@ -101,6 +101,40 @@ class DataController extends Controller
                 }
             } else {
                 return response()->json(['error' => 'No ticket found.'], 404);
+            }
+        } catch (\PDOException $e) {
+            // Log the error and return an error response
+            \Log::error('Query failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while searching tickets.'], 500);
+        }
+    }
+
+    public function comments(Request $request, DatabaseController $Database){
+    
+        $dbConnection = $Database->connect();
+        
+        $id = $request->query('unid');
+
+        try {
+            // Prepare the SQL query
+            $dbQuery = $dbConnection->prepare(
+                "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, operator.naam
+                FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
+                gebruiker AS operator ON comments.gebruikerid = operator.unid
+                WHERE parentid = :id AND veldnaam = 'ACTIE'"
+            );
+
+            // Execute the query with the search value
+            $dbQuery->execute([':id' => $id]);
+            
+            // Fetch the results
+            $comments = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Ensure $ticket is not false
+            if ($comments) {
+                return view('api.comments', ['comments' => $comments]);
+            } else {
+                return response()->json(['error' => 'No comments found.'], 404);
             }
         } catch (\PDOException $e) {
             // Log the error and return an error response

@@ -67,3 +67,44 @@ input[type=checkbox] {
 .ticketdescription {
     padding: 8px 16px;
 }
+.fielddata {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.fielddata p {
+    padding: 0px 16px;
+}
+.fielddata input {
+    width:400px;
+}
+#carddata {
+    display: flex;
+    padding: 0px 50px;
+    flex-direction: column;
+}
+#carddata > .title {
+    border-bottom: 1px solid grey;
+    padding: 8px;
+    font-size: 24px;
+    margin: 16px 0px;
+    font-weight: bold;
+}
+#comments {
+    display: flex;
+    flex-direction: column;
+}
+#comments > div {
+    padding: 8px 16px;
+    border: 1px solid #d4d4d4;
+    border-radius: 4px;
+    margin: 16px;
+}
+.invisibleforcaller {
+    padding: 4px 8px;
+    background-color: #ff00008a;
+    border-radius:4px;
+    color:white;
+    margin-bottom:8px;
+    display: inline-block;
+}
