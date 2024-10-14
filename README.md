@@ -6,7 +6,7 @@ You need to configure the database in the .env file, look at .env example.<br>
 These lines needs to be configured (you need a On-Prem MSSQL database for TOPdesk for this to work)<br>
 <br>
 ``
-MSSQL_SERVER=""<br>
+MSSQL_SERVER=""
 MSSQL_DATABASE=""<br>
 MSSQL_USERNAME=""<br>
 MSSQL_PASSWORD=""<br>`
