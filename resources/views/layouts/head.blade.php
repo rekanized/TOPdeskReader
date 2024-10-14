@@ -17,4 +17,58 @@
         color: #0369a1;
     }
 </style>
+<script>
+    $(document).ready(function(){
+        if (window.self !== window.top){
+            document.querySelector('header').style.display = "none";
+            document.querySelector('footer').style.display = "none";
+            document.querySelector('main').style.paddingTop = "0px";
+            document.querySelector('#ticketcontainer > .sectiontitle').style.display = "none";
+        }
+    });
+
+    function goToTicket(){
+        let ticketId = this.querySelector('.ticketid').innerHTML;
+        window.location.href = "/tickets/"+encodeURIComponent(ticketId);
+    }
+
+    function goToTicketPopup(){
+        let ticketId = this.querySelector('.ticketid').innerHTML;
+
+        let popupContainer = document.createElement('div');
+        popupContainer.classList.add('popupcontainer');
+
+        let popupWindow = document.createElement('div');
+        popupWindow.classList.add('ticketpopupwindow');
+        popupWindow.classList.add('popupwindow');
+
+        let popupHeader = document.createElement('div');
+        popupHeader.classList.add('popupheader');
+        popupHeader.appendChild(document.createTextNode(ticketId));
+
+        let popupCloser = document.createElement('div');
+        popupCloser.classList.add('popupcloser');
+        popupCloser.classList.add('btn');
+        popupCloser.classList.add('btn-red');
+        popupCloser.innerHTML = '&#x2716;';
+        popupCloser.addEventListener("click",closePopup);
+
+        popupWindow.appendChild(popupHeader);
+        popupWindow.appendChild(popupCloser);
+
+        let ticketIframe = document.createElement('iframe');
+        ticketIframe.classList.add('ticketpopup');
+        ticketIframe.setAttribute('src','/tickets/'+encodeURIComponent(ticketId));
+
+        popupWindow.appendChild(ticketIframe);
+
+        popupContainer.appendChild(popupWindow);
+
+        document.querySelector('main').appendChild(popupContainer);
+    }
+
+    function closePopup(){
+        this.parentNode.parentNode.remove();
+    }
+</script>
 <title>TOPdesk Reader</title>

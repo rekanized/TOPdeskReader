@@ -67,6 +67,8 @@ input[type=checkbox] {
 }
 .ticketdescription {
     padding: 8px 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .fielddata {
     display: flex;
@@ -156,7 +158,6 @@ input[type=checkbox] {
     width: 80%;
 }
 #commentscontainer {
-    width: 70vw;
     padding: 20px;
 }
 .comment {
@@ -173,6 +174,7 @@ input[type=checkbox] {
 #comments {
     display: flex;
     flex-direction: column;
+    min-width: 500px;
 }
 #comments > div {
     padding: 8px 16px;
@@ -190,6 +192,56 @@ input[type=checkbox] {
 }
 .usercomment {
     background-color: #ebf2ff;
+}
+.popupcontainer {
+    background: rgba(0,0,0,0.2);
+    width: 100%;
+    height: calc(100% - 110px);
+    display: flex;
+    position: fixed;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+}
+.popupwindow {
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0px 0px 12px -4px grey;
+    background-color: white;
+    max-width: 100%;
+    max-height: 100%;
+    min-width: 400px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+.popupheader {
+    padding: 8px;
+    text-align: center;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #80808069;
+}
+.popupcloser {
+    position: absolute;
+    right: 0;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    font-size: 20px !important;
+}
+.ticketpopupwindow {
+    width: 800px;
+    height: 90%;
+}
+.ticketpopup {
+    width: 100%;
+    height: 100%;
+}
+iframe {
+    border: none;
 }
 @media screen and (max-width: 1300px) {
     .usercomment, .operatorcomment {

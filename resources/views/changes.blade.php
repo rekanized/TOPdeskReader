@@ -3,7 +3,6 @@
 @section('content')
     <div id="ticketcontainer">
         <div class="sectiontitle">{{ $ticket['number'] }}</div>
-        <div id="ticketid">{{ $ticket['unid'] }}</div>
         <div id="cardcontainer">
             <div id="carddata">
                 <div class="title">Card</div>
@@ -45,7 +44,7 @@
 
                     data['requests'].forEach(function(request){
                         let textArea = document.createElement('textarea');
-                        textArea.style.disabled = "disabled";
+                        textArea.disabled = true;
                         textArea.innerHTML = request.memotekst;
                         requestData.appendChild(textArea);
                     });
@@ -104,6 +103,7 @@
 
                     data.forEach(activity => {
                         let activityContainer = document.createElement('div');
+                        activityContainer.addEventListener("click",goToTicketPopup);
                         activityContainer.classList.add('ticket');
                         activityContainer.classList.add('activity');
 

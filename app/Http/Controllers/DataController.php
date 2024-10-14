@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\DatabaseController;
-use App\Http\Controllers\Arr;
 
 class DataController extends Controller
 {
@@ -137,8 +136,26 @@ class DataController extends Controller
                     }
                 } 
                 else if ($ticket['type'] == 'changeactivity') {
-                    // Handle change activity logic
-                    return view('changeactivities', ['ticket' => $ticket]);
+                    $dbQuery = $dbConnection->prepare(
+                        "SELECT changeactivity.unid, 
+                        changeactivity.number, 
+                        changeactivity.briefdescription, 
+                        changeactivity.dataanmk,
+                        changeactivity.ref_change_number,
+                        changeactivity.ref_change_brief_description
+                        FROM changeactivity
+                        WHERE changeactivity.number = :id"
+                    );
+
+                    // Execute the query with the search value
+                    $dbQuery->execute([':id' => $id]);
+                    
+                    $ticket = $dbQuery->fetch(\PDO::FETCH_ASSOC);
+
+                    // Check again if ticket is not false
+                    if ($ticket) {
+                        return view('changeactivities', ['ticket' => $ticket]);
+                    }
                 }
             } else {
                 return response()->json(['error' => 'No ticket found.'], 404);
@@ -177,6 +194,15 @@ class DataController extends Controller
                     ORDER BY comments.dataanmk DESC"
                 );
             }
+            else if ($type == 'changeactivity'){
+                $dbQuery = $dbConnection->prepare(
+                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
+                    gebruiker AS operator ON comments.gebruikerid = operator.unid
+                    WHERE parentid = :id
+                    ORDER BY comments.dataanmk DESC"
+                );
+            }
             else {
                 return;
             }
@@ -195,12 +221,16 @@ class DataController extends Controller
                 $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTION'; }));
                 $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'DESCRIPTION'; }));
             }
+            else if ($type == 'changeactivity'){
+                $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTION'; }));
+                $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'DESCRIPTION'; }));
+            }
             else {
                 return;
             }
 
             // Ensure $ticket is not false
-            if ($comments) {
+            if ($comments || $requests) {
                 return view('api.comments', ['comments' => $comments, 'requests' => $requests]);
             } else {
                 return response()->json(['error' => 'No comments found.'], 404);
