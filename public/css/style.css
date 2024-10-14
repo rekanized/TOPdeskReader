@@ -63,6 +63,7 @@ input[type=checkbox] {
     padding: 8px;
     color: white;
     border-radius: 4px;
+    white-space:nowrap;
 }
 .ticketdescription {
     padding: 8px 16px;
@@ -78,17 +79,96 @@ input[type=checkbox] {
 .fielddata input {
     width:400px;
 }
+#ticketcontainer {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#ticketid {
+    font-size: 12px;
+    position: absolute;
+}
+.sectiontitle {
+    margin: 20px;
+    font-weight: bold;
+    font-size: 32px;
+    text-align: center;
+}
+#cardcontainer {
+    display: flex;
+    padding-bottom: 60px;
+    border-bottom: 1px solid #d5d3d3
+}
+@media screen and (max-width: 1300px) {
+    #cardcontainer {
+        flex-direction: column;
+    }
+}
 #carddata {
     display: flex;
     padding: 0px 50px;
     flex-direction: column;
 }
-#carddata > .title {
-    border-bottom: 1px solid grey;
-    padding: 8px;
+#carddata > .title, #request > .title {
+    border-bottom: 1px solid #d5d3d3;
+    padding: 16px;
     font-size: 24px;
     margin: 16px 0px;
     font-weight: bold;
+}
+#request {
+    display: flex;
+    padding: 0px 50px;
+    border-left: 1px solid #d5d3d3;
+    flex-direction: column;
+    min-height: 600px;
+}
+#requestdata {
+    display:flex;
+    flex: 1;
+}
+#requestdata > textarea {
+    min-width: 50vw;
+    margin: 4px;
+    flex: 1;
+}
+@media screen and (max-width: 1300px) {
+    #request {
+        border-left: none;
+    }
+}
+#relationscontainer {
+    display: flex;
+}
+#relations {
+    width: 20vw;
+    padding: 20px;
+    border-left: 1px solid #d5d3d3;
+}
+#activities {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+.activity {
+    width: 80%;
+}
+#commentscontainer {
+    width: 70vw;
+    padding: 20px;
+}
+.comment {
+    border-bottom: 1px solid grey;
+    padding: 16px 0px;
+    margin-bottom: 8px;
+}
+.commenter {
+    font-weight: bold;
+}
+.commentdate {
+    font-size: 12px;
 }
 #comments {
     display: flex;
@@ -107,4 +187,13 @@ input[type=checkbox] {
     color:white;
     margin-bottom:8px;
     display: inline-block;
+}
+.usercomment {
+    background-color: #ebf2ff;
+}
+@media screen and (max-width: 1300px) {
+    .usercomment, .operatorcomment {
+        align-self: center;
+        width: 100% !important;
+    }
 }

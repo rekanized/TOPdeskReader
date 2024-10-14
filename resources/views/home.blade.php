@@ -8,10 +8,17 @@
 
     <script>
         function search(){
+            function goToTicket(){
+                let ticketId = this.querySelector('.ticketid').innerHTML;
+
+                window.location.href = "/tickets/"+encodeURIComponent(ticketId);
+            }
+
             let searchBox = document.querySelector('#searchresults');
             
             function returnTicketBox(id,type,description){
                 let ticketContainer = document.createElement('div');
+                ticketContainer.addEventListener("click",goToTicket);
                 ticketContainer.classList.add('ticket');
                 let ticketId = document.createElement('div');
 

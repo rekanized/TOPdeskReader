@@ -12,3 +12,5 @@ Route::get('/tickets', [DataController::class, 'search']);
 Route::get('/tickets/{id}', [DataController::class, 'show']);
 
 Route::get('/api/comments', [DataController::class, 'comments']);
+
+Route::get('/api/tickets/{unid}/activities', [DataController::class, 'changeactivities']);

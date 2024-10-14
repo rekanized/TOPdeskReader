@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\DatabaseController;
+use App\Http\Controllers\Arr;
 
 class DataController extends Controller
 {
@@ -77,9 +78,24 @@ class DataController extends Controller
             if ($ticket) {
                 if ($ticket['type'] == 'ticket') {
                     $dbQuery = $dbConnection->prepare(
-                        "SELECT * 
-                        FROM incident
-                        WHERE naam = :id"
+                        "SELECT incident.unid, 
+                        incident.ref_vestiging, 
+                        incident.naam, 
+                        incident.aanmeldernaam, 
+                        incident.aanmelderemail, 
+                        incident.korteomschrijving, 
+                        incident.ref_soortmelding, 
+                        incident.ref_domein, 
+                        incident.ref_specificatie,
+                        incident.dataanmk,
+                        impact.naam AS impact, 
+                        urgency.naam AS urgency,
+                        priority.naam AS priority
+                        FROM incident LEFT OUTER JOIN 
+                        impact ON incident.impactid = impact.unid LEFT OUTER JOIN 
+                        urgency ON incident.urgencyid = urgency.unid LEFT OUTER JOIN 
+                        priority ON incident.priorityid = priority.unid
+                        WHERE incident.naam = :id"
                     );
 
                     // Execute the query with the search value
@@ -92,12 +108,37 @@ class DataController extends Controller
                         // Return the ticket results in the view
                         return view('tickets', ['ticket' => $ticket]);
                     }
-                } else if ($ticket['type'] == 'change') {
-                    // Handle change logic
-                    return view('tickets', ['changes' => $change]);
-                } else if ($ticket['type'] == 'changeactivity') {
+                } 
+                else if ($ticket['type'] == 'change') {
+
+                    $dbQuery = $dbConnection->prepare(
+                        "SELECT change.unid, 
+                        change.ref_caller_branch_name, 
+                        change.number, 
+                        change.aanmeldernaam, 
+                        change.aanmelderemail, 
+                        change.briefdescription, 
+                        change.ref_type_name, 
+                        change.ref_category_name, 
+                        change.ref_subcategory_name,
+                        change.dataanmk
+                        FROM change
+                        WHERE change.number = :id"
+                    );
+
+                    // Execute the query with the search value
+                    $dbQuery->execute([':id' => $id]);
+                    
+                    $ticket = $dbQuery->fetch(\PDO::FETCH_ASSOC);
+
+                    // Check again if ticket is not false
+                    if ($ticket) {
+                        return view('changes', ['ticket' => $ticket]);
+                    }
+                } 
+                else if ($ticket['type'] == 'changeactivity') {
                     // Handle change activity logic
-                    return view('tickets', ['changeactivities' => $changeactivity]);
+                    return view('changeactivities', ['ticket' => $ticket]);
                 }
             } else {
                 return response()->json(['error' => 'No ticket found.'], 404);
@@ -114,25 +155,53 @@ class DataController extends Controller
         $dbConnection = $Database->connect();
         
         $id = $request->query('unid');
+        $type = $request->query('type');
 
         try {
-            // Prepare the SQL query
-            $dbQuery = $dbConnection->prepare(
-                "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, operator.naam
-                FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
-                gebruiker AS operator ON comments.gebruikerid = operator.unid
-                WHERE parentid = :id AND veldnaam = 'ACTIE'"
-            );
+
+            if ($type == 'ticket'){
+                $dbQuery = $dbConnection->prepare(
+                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
+                    gebruiker AS operator ON comments.gebruikerid = operator.unid
+                    WHERE parentid = :id
+                    ORDER BY comments.dataanmk DESC"
+                );
+            }
+            else if ($type == 'change'){
+                $dbQuery = $dbConnection->prepare(
+                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
+                    gebruiker AS operator ON comments.gebruikerid = operator.unid
+                    WHERE parentid = :id
+                    ORDER BY comments.dataanmk DESC"
+                );
+            }
+            else {
+                return;
+            }
 
             // Execute the query with the search value
             $dbQuery->execute([':id' => $id]);
             
             // Fetch the results
-            $comments = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+            $ticketData = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($type == 'ticket'){
+                $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTIE'; }));
+                $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'VERZOEK'; }));
+            }
+            else if ($type == 'change'){
+                $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTION'; }));
+                $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'DESCRIPTION'; }));
+            }
+            else {
+                return;
+            }
 
             // Ensure $ticket is not false
             if ($comments) {
-                return view('api.comments', ['comments' => $comments]);
+                return view('api.comments', ['comments' => $comments, 'requests' => $requests]);
             } else {
                 return response()->json(['error' => 'No comments found.'], 404);
             }
@@ -140,6 +209,35 @@ class DataController extends Controller
             // Log the error and return an error response
             \Log::error('Query failed: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while searching tickets.'], 500);
+        }
+    }
+    public function changeactivities($unid, DatabaseController $Database){
+        $dbConnection = $Database->connect();
+
+        try {
+            $dbQuery = $dbConnection->prepare(
+                "SELECT number,briefdescription
+                FROM changeactivity
+                WHERE changeid = :unid"
+            );
+
+            // Execute the query with the search value
+            $dbQuery->execute([':unid' => $unid]);
+            
+            // Fetch the results
+            $changeactivities = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Ensure $ticket is not false
+            if ($changeactivities) {
+                return view('api.activities', ['changeactivities' => $changeactivities]);
+            }
+            else {
+                return response()->json(['error' => 'This change has no activities.']);
+            }
+        } catch (\PDOException $e) {
+            // Log the error and return an error response
+            \Log::error('Query failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while retrieving changeactivities.'], 500);
         }
     }
 }
