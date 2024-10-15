@@ -120,6 +120,7 @@ class DataController extends Controller
                     $dbQuery = $dbConnection->prepare(
                         "SELECT change.unid, 
                         change.ref_caller_branch_name, 
+                        change.changetype,
                         change.number, 
                         change.status,
                         change.aanmeldernaam, 

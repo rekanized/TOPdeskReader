@@ -9,7 +9,7 @@
                 <div class="fielddata"><p><b>Company</b></p><input type="text" value="{{ $ticket['ref_caller_branch_name'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Person</b></p><input type="text" value="{{ $ticket['aanmeldernaam'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Email</b></p><input type="text" value="{{ $ticket['aanmelderemail'] }}" disabled /></div>
-                <div class="title">Ticket</div>
+                <div class="title">{{ $ticket['changetype'] == 2 ? "Extensive change" : "Standard change" }}</div>
                 <div class="fielddata"><p><b>Brief description</b></p><input type="text" value="{{ $ticket['briefdescription'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Ticket type</b></p><input type="text" value="{{ $ticket['ref_type_name'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ $ticket['ref_category_name'] != null ? join(" > ",[$ticket['ref_category_name'],$ticket['ref_subcategory_name']]) : "" }}" disabled /></div>
@@ -87,35 +87,40 @@
                 });
             });
 
-            let outputContainer = document.querySelector('#activities');
-            loadJsonData('/api/tickets/{{ $ticket['unid'] }}/activities',outputContainer,function(data){
-                data.forEach(activity => {
-                    let activityContainer = document.createElement('div');
-                    activityContainer.addEventListener("click",goToTicketPopup);
-                    activityContainer.classList.add('ticket');
-                    activityContainer.classList.add('activity');
+            if ({{ $ticket['changetype'] }} == '2'){ // Only show activities if change = 'Extensive change'
+                let outputContainer = document.querySelector('#activities');
+                loadJsonData('/api/tickets/{{ $ticket['unid'] }}/activities',outputContainer,function(data){
+                    data.forEach(activity => {
+                        let activityContainer = document.createElement('div');
+                        activityContainer.addEventListener("click",goToTicketPopup);
+                        activityContainer.classList.add('ticket');
+                        activityContainer.classList.add('activity');
 
-                    let activityNumber = document.createElement('div');
-                    activityNumber.classList.add('ticketid');
-                    activityNumber.style.backgroundColor = "rgba(208, 96, 255, 0.8)";
-                    activityNumber.appendChild(document.createTextNode(activity.number));
+                        let activityNumber = document.createElement('div');
+                        activityNumber.classList.add('ticketid');
+                        activityNumber.style.backgroundColor = "rgba(208, 96, 255, 0.8)";
+                        activityNumber.appendChild(document.createTextNode(activity.number));
 
-                    let activityDescription = document.createElement('div');
-                    activityDescription.classList.add('ticketdescription');
-                    activityDescription.style.whiteSpace = "nowrap";
-                    activityDescription.appendChild(document.createTextNode(activity.briefdescription));
+                        let activityDescription = document.createElement('div');
+                        activityDescription.classList.add('ticketdescription');
+                        activityDescription.style.whiteSpace = "nowrap";
+                        activityDescription.appendChild(document.createTextNode(activity.briefdescription));
 
-                    let activityStatus = document.createElement('div');
-                    activityStatus.classList.add('activitystatus');
-                    activityStatus.appendChild(document.createTextNode(activity.status));
+                        let activityStatus = document.createElement('div');
+                        activityStatus.classList.add('activitystatus');
+                        activityStatus.appendChild(document.createTextNode(activity.status));
 
-                    activityContainer.appendChild(activityNumber);
-                    activityContainer.appendChild(activityDescription);
-                    activityContainer.appendChild(activityStatus);
+                        activityContainer.appendChild(activityNumber);
+                        activityContainer.appendChild(activityDescription);
+                        activityContainer.appendChild(activityStatus);
 
-                    outputContainer.appendChild(activityContainer);
+                        outputContainer.appendChild(activityContainer);
+                    });
                 });
-            });
+            }
+            else {
+                document.querySelector('#relations').style.display = "none";
+            }
         });
     </script>
 @endsection
