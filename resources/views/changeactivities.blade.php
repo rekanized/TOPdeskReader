@@ -8,8 +8,13 @@
                 <div class="title">Card</div>
                 <div class="fielddata"><p><b>Main change</b></p><input type="text" value="{{ $ticket['ref_change_number'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Main description</b></p><input type="text" value="{{ $ticket['ref_change_brief_description'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Customer</b></p><input type="text" value="{{ $ticket['ref_caller_branch_name'] }}" disabled /></div>
                 <div class="title">Ticket</div>
                 <div class="fielddata"><p><b>Brief description</b></p><input type="text" value="{{ $ticket['briefdescription'] }}" disabled /></div>
+                <div class="title">Processing</div>
+                <div class="fielddata"><p><b>Operator</b></p><input type="text" value="{{ $ticket['ref_operatorname'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Status</b></p><input type="text" value="{{ $ticket['ref_status_name'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Resolved</b></p><input type="text" value="{{ $ticket['resolveddate'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Creation date</b></p><input type="text"  value="{{ $ticket['dataanmk'] }}" disabled /></div>
             </div>
             <div id="request">

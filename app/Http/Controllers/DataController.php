@@ -88,6 +88,11 @@ class DataController extends Controller
                         incident.ref_domein, 
                         incident.ref_specificatie,
                         incident.dataanmk,
+                        incident.ref_operatorgroup,
+                        incident.ref_operatordynanaam,
+                        incident.datumgereed,
+                        incident.datumafspraaksla,
+                        incident.ref_status,
                         impact.naam AS impact, 
                         urgency.naam AS urgency,
                         priority.naam AS priority
@@ -121,8 +126,15 @@ class DataController extends Controller
                         change.ref_type_name, 
                         change.ref_category_name, 
                         change.ref_subcategory_name,
+                        change.completeddate,
+                        operatorgroup.ref_dynanaam AS ref_operatorgroupname,
+                        operator.ref_dynanaam AS ref_operatorname,
+                        status.naam AS ref_status_name,
                         change.dataanmk
-                        FROM change
+                        FROM change LEFT OUTER JOIN
+                        actiedoor AS operator ON change.operatorid = operator.unid LEFT OUTER JOIN
+                        actiedoor AS operatorgroup ON change.operatorgroupid = operatorgroup.unid LEFT OUTER JOIN
+                        wijzigingstatus AS status ON change.statusid = status.unid
                         WHERE change.number = :id"
                     );
 
@@ -143,8 +155,15 @@ class DataController extends Controller
                         changeactivity.briefdescription, 
                         changeactivity.dataanmk,
                         changeactivity.ref_change_number,
-                        changeactivity.ref_change_brief_description
-                        FROM changeactivity
+                        changeactivity.ref_change_brief_description,
+                        changeactivity.resolveddate,
+                        operator.ref_dynanaam AS ref_operatorname,
+                        status.naam AS ref_status_name,
+                        change.ref_caller_branch_name
+                        FROM changeactivity LEFT OUTER JOIN
+                        actiedoor AS operator ON changeactivity.operatorid = operator.unid LEFT OUTER JOIN
+                        changeactivity_status AS status ON changeactivity.activitystatusid = status.unid LEFT OUTER JOIN
+                        change ON changeactivity.changeid = change.unid
                         WHERE changeactivity.number = :id"
                     );
 

@@ -13,6 +13,11 @@
                 <div class="fielddata"><p><b>Brief description</b></p><input type="text" value="{{ $ticket['briefdescription'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Ticket type</b></p><input type="text" value="{{ $ticket['ref_type_name'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ $ticket['ref_category_name'] != null && $ticket['ref_subcategory_name'] != null ? $ticket['ref_category_name'] . ' > ' . $ticket['ref_subcategory_name'] : "" }}" disabled /></div>
+                <div class="title">Processing</div>
+                <div class="fielddata"><p><b>Operator group</b></p><input type="text" value="{{ $ticket['ref_operatorgroupname'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Operator</b></p><input type="text" value="{{ $ticket['ref_operatorname'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Status</b></p><input type="text" value="{{ $ticket['ref_status_name'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Completed</b></p><input type="text" value="{{ $ticket['completeddate'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Creation date</b></p><input type="text"  value="{{ $ticket['dataanmk'] }}" disabled /></div>
             </div>
             <div id="request">

@@ -14,6 +14,12 @@
                 <div class="fielddata"><p><b>Ticket type</b></p><input type="text" value="{{ $ticket['ref_soortmelding'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ ($ticket['ref_domein']) != null ? $ticket['ref_domein'] . ' > ' . $ticket['ref_specificatie'] : "" }}" disabled /></div>
                 <div class="fielddata"><p><b>Priority</b></p><input type="text"  value="{{ ($ticket['impact']) != null ? $ticket['impact'] . ' > ' . $ticket['urgency'] . ' > ' . $ticket['priority'] : "" }}" disabled /></div>
+                <div class="title">Processing</div>
+                <div class="fielddata"><p><b>Operator group</b></p><input type="text" value="{{ $ticket['ref_operatorgroup'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Operator</b></p><input type="text" value="{{ $ticket['ref_operatordynanaam'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Status</b></p><input type="text" value="{{ $ticket['ref_status'] }}" disabled /></div>
+                <div class="fielddata"><p><b>SLA Target</b></p><input type="text"  value="{{ $ticket['datumafspraaksla'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Completed</b></p><input type="text"  value="{{ $ticket['datumgereed'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Creation date</b></p><input type="text"  value="{{ $ticket['dataanmk'] }}" disabled /></div>
             </div>
             <div id="request">
