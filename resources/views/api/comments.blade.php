@@ -1,7 +1,3 @@
-<?PHP 
-    $data = [
-        'requests' => $requests,
-        'comments' => $comments
-    ];
-    echo json_encode($data);
+<?PHP
+    echo json_encode($comments);
 ?>

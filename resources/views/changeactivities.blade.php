@@ -26,60 +26,51 @@
     </div>
     <script>
         $(document).ready(function(){
-            $.ajax({
-                url: '/api/comments?unid={{ $ticket['unid'] }}&type=changeactivity',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    
-                    let commentsContainer = document.querySelector('#comments');
-                    let requestData = document.querySelector('#requestdata');
+            let requestData = document.querySelector('#requestdata');
+            loadJsonData('/api/requests?unid={{ $ticket['unid'] }}&type=changeactivity',requestData,function(data){
+                data.forEach(function(request){
+                    let textArea = document.createElement('textarea');
+                    textArea.disabled = true;
+                    textArea.innerHTML = request.memotekst;
+                    requestData.appendChild(textArea);
+                });
+            });
 
-                    data['requests'].forEach(function(request){
-                        let textArea = document.createElement('textarea');
-                        textArea.disabled = true;
-                        textArea.innerHTML = request.memotekst;
-                        requestData.appendChild(textArea);
-                    });
+            let commentsContainer = document.querySelector('#comments');
+            loadJsonData('/api/comments?unid={{ $ticket['unid'] }}&type=changeactivity',commentsContainer,function(data) {
 
-                    data['comments'].forEach(function(comment){
+                data.forEach(function(comment){
+                    let commentContainer = document.createElement('div');
+                    let commentMessage = document.createElement('div');
+                    commentMessage.classList.add('comment');
 
-                        let commentContainer = document.createElement('div');
-                        let commentMessage = document.createElement('div');
-                        commentMessage.classList.add('comment');
+                    if (comment.invisibleforcaller == true) {
+                        let invisibleForCaller = document.createElement('div');
+                        invisibleForCaller.classList.add('invisibleforcaller');
+                        invisibleForCaller.appendChild(document.createTextNode('Invisible for caller'));
+                        commentMessage.appendChild(invisibleForCaller);
+                    }
 
-                        if (comment.invisibleforcaller == true) {
-                            let invisibleForCaller = document.createElement('div');
-                            invisibleForCaller.classList.add('invisibleforcaller');
-                            invisibleForCaller.appendChild(document.createTextNode('Invisible for caller'));
-                            commentMessage.appendChild(invisibleForCaller);
-                        }
+                    if (comment.origin == 2){
+                        commentContainer.classList.add('usercomment');
+                    }
 
-                        if (comment.origin == 2){
-                            commentContainer.classList.add('usercomment');
-                        }
+                    commentMessage.innerHTML += '<div>'+comment.memotekst.replaceAll('\n','<br>')+'</div>';
 
-                        commentMessage.innerHTML += '<div>'+comment.memotekst.replaceAll('\n','<br>')+'</div>';
+                    let commenter = document.createElement('div');
+                    commenter.classList.add('commenter');
+                    commenter.appendChild(document.createTextNode(comment.naam));
 
-                        let commenter = document.createElement('div');
-                        commenter.classList.add('commenter');
-                        commenter.appendChild(document.createTextNode(comment.naam));
+                    let commentDate = document.createElement('span');
+                    commentDate.classList.add('commentdate');
+                    commentDate.appendChild(document.createTextNode(comment.dataanmk));
 
-                        let commentDate = document.createElement('span');
-                        commentDate.classList.add('commentdate');
-                        commentDate.appendChild(document.createTextNode(comment.dataanmk));
+                    commentContainer.appendChild(commentMessage);
+                    commentContainer.appendChild(commenter);
+                    commentContainer.appendChild(commentDate);
 
-                        commentContainer.appendChild(commentMessage);
-                        commentContainer.appendChild(commenter);
-                        commentContainer.appendChild(commentDate);
-
-                        commentsContainer.appendChild(commentContainer);
-                    });
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error:', textStatus, errorThrown);
-                    $('#comments').html('<p>An error occurred while fetching data.</p>');
-                }
+                    commentsContainer.appendChild(commentContainer);
+                });
             });
         });
     </script>

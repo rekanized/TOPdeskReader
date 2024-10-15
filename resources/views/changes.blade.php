@@ -33,100 +33,77 @@
     </div>
     <script>
         $(document).ready(function(){
-            $.ajax({
-                url: '/api/comments?unid={{ $ticket['unid'] }}&type=change',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    
-                    let commentsContainer = document.querySelector('#comments');
-                    let requestData = document.querySelector('#requestdata');
 
-                    data['requests'].forEach(function(request){
-                        let textArea = document.createElement('textarea');
-                        textArea.disabled = true;
-                        textArea.innerHTML = request.memotekst;
-                        requestData.appendChild(textArea);
-                    });
-
-                    data['comments'].forEach(function(comment){
-
-                        let commentContainer = document.createElement('div');
-                        let commentMessage = document.createElement('div');
-                        commentMessage.classList.add('comment');
-
-                        if (comment.invisibleforcaller == true) {
-                            let invisibleForCaller = document.createElement('div');
-                            invisibleForCaller.classList.add('invisibleforcaller');
-                            invisibleForCaller.appendChild(document.createTextNode('Invisible for caller'));
-                            commentMessage.appendChild(invisibleForCaller);
-                        }
-
-                        if (comment.origin == 2){
-                            commentContainer.classList.add('usercomment');
-                        }
-
-                        commentMessage.innerHTML += '<div>'+comment.memotekst.replaceAll('\n','<br>')+'</div>';
-
-                        let commenter = document.createElement('div');
-                        commenter.classList.add('commenter');
-                        commenter.appendChild(document.createTextNode(comment.naam));
-
-                        let commentDate = document.createElement('span');
-                        commentDate.classList.add('commentdate');
-                        commentDate.appendChild(document.createTextNode(comment.dataanmk));
-
-                        commentContainer.appendChild(commentMessage);
-                        commentContainer.appendChild(commenter);
-                        commentContainer.appendChild(commentDate);
-
-                        commentsContainer.appendChild(commentContainer);
-                    });
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error:', textStatus, errorThrown);
-                    $('#comments').html('<p>An error occurred while fetching data.</p>');
-                }
+            let requestData = document.querySelector('#requestdata');
+            loadJsonData('/api/requests?unid={{ $ticket['unid'] }}&type=change',requestData,function(data){
+                data.forEach(function(request){
+                    let textArea = document.createElement('textarea');
+                    textArea.disabled = true;
+                    textArea.innerHTML = request.memotekst;
+                    requestData.appendChild(textArea);
+                });
             });
 
-            $.ajax({
-                url: '/api/tickets/{{ $ticket['unid'] }}/activities',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    let activitiesContainer = document.querySelector('#activities');
+            let commentsContainer = document.querySelector('#comments');
+            loadJsonData('/api/comments?unid={{ $ticket['unid'] }}&type=change',commentsContainer,function(data) {
 
-                    if (data.error){
-                        activitiesContainer.innerHTML = data.error;
-                        return;
+                data.forEach(function(comment){
+                    let commentContainer = document.createElement('div');
+                    let commentMessage = document.createElement('div');
+                    commentMessage.classList.add('comment');
+
+                    if (comment.invisibleforcaller == true) {
+                        let invisibleForCaller = document.createElement('div');
+                        invisibleForCaller.classList.add('invisibleforcaller');
+                        invisibleForCaller.appendChild(document.createTextNode('Invisible for caller'));
+                        commentMessage.appendChild(invisibleForCaller);
                     }
 
-                    data.forEach(activity => {
-                        let activityContainer = document.createElement('div');
-                        activityContainer.addEventListener("click",goToTicketPopup);
-                        activityContainer.classList.add('ticket');
-                        activityContainer.classList.add('activity');
+                    if (comment.origin == 2){
+                        commentContainer.classList.add('usercomment');
+                    }
 
-                        let activityNumber = document.createElement('div');
-                        activityNumber.classList.add('ticketid');
-                        activityNumber.style.backgroundColor = "rgba(208, 96, 255, 0.8)";
-                        activityNumber.appendChild(document.createTextNode(activity.number));
+                    commentMessage.innerHTML += '<div>'+comment.memotekst.replaceAll('\n','<br>')+'</div>';
 
-                        let activityDescription = document.createElement('div');
-                        activityDescription.classList.add('ticketdescription');
-                        activityDescription.style.whiteSpace = "nowrap";
-                        activityDescription.appendChild(document.createTextNode(activity.briefdescription));
+                    let commenter = document.createElement('div');
+                    commenter.classList.add('commenter');
+                    commenter.appendChild(document.createTextNode(comment.naam));
 
-                        activityContainer.appendChild(activityNumber);
-                        activityContainer.appendChild(activityDescription);
+                    let commentDate = document.createElement('span');
+                    commentDate.classList.add('commentdate');
+                    commentDate.appendChild(document.createTextNode(comment.dataanmk));
 
-                        activitiesContainer.appendChild(activityContainer);
-                    });
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error:', textStatus, errorThrown);
-                    $('#activities').html('<p>An error occurred while fetching data.</p>');
-                }
+                    commentContainer.appendChild(commentMessage);
+                    commentContainer.appendChild(commenter);
+                    commentContainer.appendChild(commentDate);
+
+                    commentsContainer.appendChild(commentContainer);
+                });
+            });
+
+            let outputContainer = document.querySelector('#activities');
+            loadJsonData('/api/tickets/{{ $ticket['unid'] }}/activities',outputContainer,function(data){
+                data.forEach(activity => {
+                    let activityContainer = document.createElement('div');
+                    activityContainer.addEventListener("click",goToTicketPopup);
+                    activityContainer.classList.add('ticket');
+                    activityContainer.classList.add('activity');
+
+                    let activityNumber = document.createElement('div');
+                    activityNumber.classList.add('ticketid');
+                    activityNumber.style.backgroundColor = "rgba(208, 96, 255, 0.8)";
+                    activityNumber.appendChild(document.createTextNode(activity.number));
+
+                    let activityDescription = document.createElement('div');
+                    activityDescription.classList.add('ticketdescription');
+                    activityDescription.style.whiteSpace = "nowrap";
+                    activityDescription.appendChild(document.createTextNode(activity.briefdescription));
+
+                    activityContainer.appendChild(activityNumber);
+                    activityContainer.appendChild(activityDescription);
+
+                    outputContainer.appendChild(activityContainer);
+                });
             });
         });
     </script>

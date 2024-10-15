@@ -40,21 +40,11 @@
 
             let searchValue = document.querySelector('#searchinput').value;
 
-            $.ajax({
-                url: '/tickets?searchvalue='+encodeURIComponent(searchValue), // Sample API endpoint
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    $('#searchresults').empty(); // Clear previous results
-                    data.forEach(function(ticket) {
-                        $('#searchresults').append(returnTicketBox(ticket.id,ticket.type,ticket.description));
-                    });
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    // Handle the error response
-                    console.error('Error:', textStatus, errorThrown);
-                    $('#result').html('<p>An error occurred while fetching data.</p>');
-                }
+            loadJsonData('/tickets?searchvalue='+encodeURIComponent(searchValue),searchBox,function(data) {
+                $(searchBox).empty(); // Clear previous results
+                data.forEach(function(ticket) {
+                    searchBox.append(returnTicketBox(ticket.id,ticket.type,ticket.description));
+                });
             });
         }
     </script>

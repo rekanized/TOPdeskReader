@@ -27,6 +27,36 @@
         }
     });
 
+    function addLoader(container){
+        let loader = document.createElement('div');
+        loader.classList.add('loader');
+        let spinner = document.createElement('div');
+        spinner.classList.add('spinner');
+        loader.appendChild(spinner);
+        container.appendChild(loader);
+    }
+
+    function loadJsonData(url,outputContainer,runFunction){
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function(){
+                addLoader(outputContainer);
+                $(outputContainer).find('.loader').fadeIn(100);
+            },
+            success: runFunction,
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Handle the error response
+                console.error('Error:', textStatus, errorThrown);
+                outputContainer.html('<p>An error occurred while fetching data.</p>');
+            },
+            complete: function(){
+                $(outputContainer).find('.loader').fadeOut(100,function(){$(this).remove()});
+            }
+        });
+    }
+
     function goToTicket(){
         let ticketId = this.querySelector('.ticketid').innerHTML;
         window.location.href = "/tickets/"+encodeURIComponent(ticketId);

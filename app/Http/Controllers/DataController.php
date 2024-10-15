@@ -167,6 +167,65 @@ class DataController extends Controller
         }
     }
 
+    public function requests(Request $request, DatabaseController $Database){
+    
+        $dbConnection = $Database->connect();
+
+        $id = $request->query('unid');
+        $type = $request->query('type');
+
+        try {
+
+            if ($type == 'ticket'){
+                $dbQuery = $dbConnection->prepare(
+                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
+                    gebruiker AS operator ON comments.gebruikerid = operator.unid
+                    WHERE parentid = :id AND veldnaam = 'VERZOEK'
+                    ORDER BY comments.dataanmk DESC"
+                );
+            }
+            else if ($type == 'change'){
+                $dbQuery = $dbConnection->prepare(
+                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
+                    gebruiker AS operator ON comments.gebruikerid = operator.unid
+                    WHERE parentid = :id AND veldnaam = 'DESCRIPTION'
+                    ORDER BY comments.dataanmk DESC"
+                );
+            }
+            else if ($type == 'changeactivity'){
+                $dbQuery = $dbConnection->prepare(
+                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
+                    gebruiker AS operator ON comments.gebruikerid = operator.unid
+                    WHERE parentid = :id AND veldnaam = 'DESCRIPTION'
+                    ORDER BY comments.dataanmk DESC"
+                );
+            }
+            else {
+                return;
+            }
+
+            // Execute the query with the search value
+            $dbQuery->execute([':id' => $id]);
+            
+            // Fetch the results
+            $ticketData = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Ensure $ticket is not false
+            if ($ticketData) {
+                return view('api.requests', ['requests' => $ticketData]);
+            } else {
+                return response()->json(['error' => 'No requests found.'], 404);
+            }
+        } catch (\PDOException $e) {
+            // Log the error and return an error response
+            \Log::error('Query failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while searching tickets.'], 500);
+        }
+    }
+
     public function comments(Request $request, DatabaseController $Database){
     
         $dbConnection = $Database->connect();
@@ -181,7 +240,7 @@ class DataController extends Controller
                     "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
-                    WHERE parentid = :id
+                    WHERE parentid = :id AND veldnaam = 'ACTIE'
                     ORDER BY comments.dataanmk DESC"
                 );
             }
@@ -190,7 +249,7 @@ class DataController extends Controller
                     "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
-                    WHERE parentid = :id
+                    WHERE parentid = :id AND veldnaam = 'ACTION'
                     ORDER BY comments.dataanmk DESC"
                 );
             }
@@ -199,7 +258,7 @@ class DataController extends Controller
                     "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
-                    WHERE parentid = :id
+                    WHERE parentid = :id AND veldnaam = 'ACTION'
                     ORDER BY comments.dataanmk DESC"
                 );
             }
@@ -213,25 +272,9 @@ class DataController extends Controller
             // Fetch the results
             $ticketData = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
 
-            if ($type == 'ticket'){
-                $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTIE'; }));
-                $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'VERZOEK'; }));
-            }
-            else if ($type == 'change'){
-                $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTION'; }));
-                $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'DESCRIPTION'; }));
-            }
-            else if ($type == 'changeactivity'){
-                $comments = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'ACTION'; }));
-                $requests = array_values(array_filter($ticketData, function ($object) { return $object['veldnaam'] == 'DESCRIPTION'; }));
-            }
-            else {
-                return;
-            }
-
             // Ensure $ticket is not false
-            if ($comments || $requests) {
-                return view('api.comments', ['comments' => $comments, 'requests' => $requests]);
+            if ($ticketData) {
+                return view('api.comments', ['comments' => $ticketData]);
             } else {
                 return response()->json(['error' => 'No comments found.'], 404);
             }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use PDO as PDO;
-use PDOException AS PDOException;
 
 class DatabaseController extends Controller
 {
@@ -18,9 +17,9 @@ class DatabaseController extends Controller
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $conn;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             // Log the error for better error tracking
-            Log::error("Database connection failed: " . $e->getMessage());
+            \Log::error("Database connection failed: " . $e->getMessage());
 
             // Return null or false so that the calling code can handle the failure
             return null;
