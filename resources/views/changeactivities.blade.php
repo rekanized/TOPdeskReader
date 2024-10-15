@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="ticketcontainer">
-        <div class="sectiontitle">{{ $ticket['number'] }}</div>
+        <div class="sectiontitle"><div>{{ $ticket['number'] }}</div>{!! $ticket['status'] < 0 ? "<div class='ticketarchived'>Archived</div>" : "" !!}</div>
         <div id="cardcontainer">
             <div id="carddata">
                 <div class="title">Card</div>

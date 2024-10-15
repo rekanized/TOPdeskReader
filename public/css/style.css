@@ -70,7 +70,7 @@ input[type=checkbox] {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.ticketperson {
+.ticketperson, .activitystatus {
     background-color: #c9c9c9;
     border-radius: 4px;
     padding: 8px;
@@ -135,6 +135,7 @@ input[type=checkbox] {
 }
 #requestdata {
     display:flex;
+    flex-direction: column;
     flex: 1;
 }
 #requestdata > textarea {
@@ -151,9 +152,19 @@ input[type=checkbox] {
     display: flex;
 }
 #relations {
-    width: 20vw;
+    width: 600px;
     padding: 20px;
     border-left: 1px solid #d5d3d3;
+}
+@media screen and (max-width: 1300px) {
+    #relationscontainer {
+        flex-direction: column;
+    }
+    #relations {
+        width: auto;
+        border-left: none;
+        border-top: 1px solid #d5d3d3;
+    }
 }
 #activities {
     display: flex;
@@ -196,6 +207,17 @@ input[type=checkbox] {
     color:white;
     margin-bottom:8px;
     display: inline-block;
+}
+.ticketarchived {
+    padding: 4px 8px;
+    background-color: #ff00008a;
+    border-radius:4px;
+    color:white;
+    display: inline-block;
+    font-size: 18px;
+}
+.searchticketarchived {
+    background-color: rgba(255, 0, 0, 0.34)
 }
 .usercomment {
     background-color: #ebf2ff;

@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="ticketcontainer">
-        <div class="sectiontitle">{{ $ticket['number'] }}</div>
+        <div class="sectiontitle"><div>{{ $ticket['number'] }}</div>{!! $ticket['status'] < 0 ? "<div class='ticketarchived'>Archived</div>" : "" !!}</div>
         <div id="cardcontainer">
             <div id="carddata">
                 <div class="title">Card</div>
@@ -12,7 +12,8 @@
                 <div class="title">Ticket</div>
                 <div class="fielddata"><p><b>Brief description</b></p><input type="text" value="{{ $ticket['briefdescription'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Ticket type</b></p><input type="text" value="{{ $ticket['ref_type_name'] }}" disabled /></div>
-                <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ $ticket['ref_category_name'] != null && $ticket['ref_subcategory_name'] != null ? $ticket['ref_category_name'] . ' > ' . $ticket['ref_subcategory_name'] : "" }}" disabled /></div>
+                <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ $ticket['ref_category_name'] != null ? join(" > ",[$ticket['ref_category_name'],$ticket['ref_subcategory_name']]) : "" }}" disabled /></div>
+                <div class="fielddata"><p><b>Priority</b></p><input type="text"  value="{{ $ticket['impact'] != null ? join(" > ",[$ticket['impact'],$ticket['benefit'],$ticket['priority']]) : "" }}" disabled /></div>
                 <div class="title">Processing</div>
                 <div class="fielddata"><p><b>Operator group</b></p><input type="text" value="{{ $ticket['ref_operatorgroupname'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Operator</b></p><input type="text" value="{{ $ticket['ref_operatorname'] }}" disabled /></div>
@@ -104,8 +105,13 @@
                     activityDescription.style.whiteSpace = "nowrap";
                     activityDescription.appendChild(document.createTextNode(activity.briefdescription));
 
+                    let activityStatus = document.createElement('div');
+                    activityStatus.classList.add('activitystatus');
+                    activityStatus.appendChild(document.createTextNode(activity.status));
+
                     activityContainer.appendChild(activityNumber);
                     activityContainer.appendChild(activityDescription);
+                    activityContainer.appendChild(activityStatus);
 
                     outputContainer.appendChild(activityContainer);
                 });

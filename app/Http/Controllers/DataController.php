@@ -24,11 +24,11 @@ class DataController extends Controller
             $dbQuery = $dbConnection->prepare(
                 "SELECT TOP 20 *
                 FROM (
-                    SELECT unid AS topdesk_id, naam AS id, korteomschrijving AS description, aanmeldernaam AS person, 'ticket' AS type FROM incident
+                    SELECT unid AS topdesk_id, naam AS id, korteomschrijving AS description, status, aanmeldernaam AS person, 'ticket' AS type FROM incident
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, aanmeldernaam AS person, 'change' AS type FROM [change]
+                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, status, aanmeldernaam AS person, 'change' AS type FROM [change]
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, '' AS person, 'changeactivity' AS type FROM changeactivity
+                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, status, '' AS person, 'changeactivity' AS type FROM changeactivity
                 ) AS data
                 WHERE id LIKE :searchid OR description LIKE :searchdescription OR person LIKE :searchperson
                 ORDER BY id DESC" 
@@ -81,17 +81,18 @@ class DataController extends Controller
                         "SELECT incident.unid, 
                         incident.ref_vestiging, 
                         incident.naam, 
+                        incident.status,
                         incident.aanmeldernaam, 
                         incident.aanmelderemail, 
                         incident.korteomschrijving, 
                         incident.ref_soortmelding, 
                         incident.ref_domein, 
                         incident.ref_specificatie,
-                        incident.dataanmk,
+                        CONVERT(VARCHAR, incident.dataanmk, 120) AS dataanmk,
                         incident.ref_operatorgroup,
                         incident.ref_operatordynanaam,
-                        incident.datumgereed,
-                        incident.datumafspraaksla,
+                        CONVERT(VARCHAR, incident.datumgereed, 120) AS datumgereed,
+                        CONVERT(VARCHAR, incident.datumafspraaksla, 120) AS datumafspraaksla,
                         incident.ref_status,
                         impact.naam AS impact, 
                         urgency.naam AS urgency,
@@ -120,21 +121,28 @@ class DataController extends Controller
                         "SELECT change.unid, 
                         change.ref_caller_branch_name, 
                         change.number, 
+                        change.status,
                         change.aanmeldernaam, 
                         change.aanmelderemail, 
                         change.briefdescription, 
                         change.ref_type_name, 
                         change.ref_category_name, 
                         change.ref_subcategory_name,
-                        change.completeddate,
+                        CONVERT(VARCHAR, change.completeddate, 120) AS completeddate, 
                         operatorgroup.ref_dynanaam AS ref_operatorgroupname,
                         operator.ref_dynanaam AS ref_operatorname,
                         status.naam AS ref_status_name,
-                        change.dataanmk
+                        CONVERT(VARCHAR, change.dataanmk, 120) AS dataanmk, 
+                        impact.naam AS impact, 
+                        changebenefit.naam AS benefit,
+                        priority.naam AS priority
                         FROM change LEFT OUTER JOIN
                         actiedoor AS operator ON change.operatorid = operator.unid LEFT OUTER JOIN
                         actiedoor AS operatorgroup ON change.operatorgroupid = operatorgroup.unid LEFT OUTER JOIN
-                        wijzigingstatus AS status ON change.statusid = status.unid
+                        wijzigingstatus AS status ON change.statusid = status.unid LEFT OUTER JOIN 
+                        wijziging_impact AS impact ON change.impactid = impact.unid LEFT OUTER JOIN 
+                        changebenefit ON change.benefitid = changebenefit.unid LEFT OUTER JOIN 
+                        change_priority AS priority ON change.priorityid = priority.unid
                         WHERE change.number = :id"
                     );
 
@@ -152,11 +160,12 @@ class DataController extends Controller
                     $dbQuery = $dbConnection->prepare(
                         "SELECT changeactivity.unid, 
                         changeactivity.number, 
+                        changeactivity.status,
                         changeactivity.briefdescription, 
-                        changeactivity.dataanmk,
+                        CONVERT(VARCHAR, changeactivity.dataanmk, 120) AS dataanmk,
                         changeactivity.ref_change_number,
                         changeactivity.ref_change_brief_description,
-                        changeactivity.resolveddate,
+                        CONVERT(VARCHAR, changeactivity.resolveddate, 120) AS resolveddate,
                         operator.ref_dynanaam AS ref_operatorname,
                         status.naam AS ref_status_name,
                         change.ref_caller_branch_name
@@ -198,7 +207,7 @@ class DataController extends Controller
 
             if ($type == 'ticket'){
                 $dbQuery = $dbConnection->prepare(
-                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'VERZOEK'
@@ -207,7 +216,7 @@ class DataController extends Controller
             }
             else if ($type == 'change'){
                 $dbQuery = $dbConnection->prepare(
-                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'DESCRIPTION'
@@ -216,7 +225,7 @@ class DataController extends Controller
             }
             else if ($type == 'changeactivity'){
                 $dbQuery = $dbConnection->prepare(
-                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'DESCRIPTION'
@@ -257,7 +266,7 @@ class DataController extends Controller
 
             if ($type == 'ticket'){
                 $dbQuery = $dbConnection->prepare(
-                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'ACTIE'
@@ -266,7 +275,7 @@ class DataController extends Controller
             }
             else if ($type == 'change'){
                 $dbQuery = $dbConnection->prepare(
-                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'ACTION'
@@ -275,7 +284,7 @@ class DataController extends Controller
             }
             else if ($type == 'changeactivity'){
                 $dbQuery = $dbConnection->prepare(
-                    "SELECT comments.memotekst, comments.dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
+                    "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
                     FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'ACTION'
@@ -309,8 +318,9 @@ class DataController extends Controller
 
         try {
             $dbQuery = $dbConnection->prepare(
-                "SELECT number,briefdescription
-                FROM changeactivity
+                "SELECT number,briefdescription, status.naam AS status
+                FROM changeactivity LEFT OUTER JOIN
+                changeactivity_status AS status ON changeactivity.activitystatusid = status.unid
                 WHERE changeid = :unid"
             );
 

@@ -21,10 +21,14 @@
         function search(){
             let searchBox = document.querySelector('#searchresults');
 
-            function returnTicketBox(id,type,description,person){
+            function returnTicketBox(id,type,description,person,archived){
                 let ticketContainer = document.createElement('div');
                 ticketContainer.addEventListener("click",goToTicket);
                 ticketContainer.classList.add('ticket');
+                if (archived < 0){
+                    ticketContainer.classList.add('searchticketarchived');
+                }
+                
                 let ticketId = document.createElement('div');
 
                 if (type == 'ticket'){
@@ -60,7 +64,7 @@
             loadJsonData('/tickets?searchvalue='+encodeURIComponent(searchValue),searchBox,function(data) {
                 $(searchBox).empty(); // Clear previous results
                 data.forEach(function(ticket) {
-                    searchBox.append(returnTicketBox(ticket.id,ticket.type,ticket.description,ticket.person));
+                    searchBox.append(returnTicketBox(ticket.id,ticket.type,ticket.description,ticket.person,ticket.status));
                 });
             });
         }

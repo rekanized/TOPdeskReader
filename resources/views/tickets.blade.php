@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="ticketcontainer">
-        <div class="sectiontitle">{{ $ticket['naam'] }}</div>
+        <div class="sectiontitle"><div>{{ $ticket['naam'] }}</div>{!! $ticket['status'] < 0 ? "<div class='ticketarchived'>Archived</div>" : "" !!}</div>
         <div id="cardcontainer">
             <div id="carddata">
                 <div class="title">Card</div>
@@ -12,8 +12,8 @@
                 <div class="title">Ticket</div>
                 <div class="fielddata"><p><b>Brief description</b></p><input type="text" value="{{ $ticket['korteomschrijving'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Ticket type</b></p><input type="text" value="{{ $ticket['ref_soortmelding'] }}" disabled /></div>
-                <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ ($ticket['ref_domein']) != null ? $ticket['ref_domein'] . ' > ' . $ticket['ref_specificatie'] : "" }}" disabled /></div>
-                <div class="fielddata"><p><b>Priority</b></p><input type="text"  value="{{ ($ticket['impact']) != null ? $ticket['impact'] . ' > ' . $ticket['urgency'] . ' > ' . $ticket['priority'] : "" }}" disabled /></div>
+                <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ $ticket['ref_domein'] != null ? join(" > ",[$ticket['ref_domein'],$ticket['ref_specificatie']]) : "" }}" disabled /></div>
+                <div class="fielddata"><p><b>Priority</b></p><input type="text"  value="{{ $ticket['impact'] != null ? join(" > ",[$ticket['impact'],$ticket['urgency'],$ticket['priority']]) : "" }}" disabled /></div>
                 <div class="title">Processing</div>
                 <div class="fielddata"><p><b>Operator group</b></p><input type="text" value="{{ $ticket['ref_operatorgroup'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Operator</b></p><input type="text" value="{{ $ticket['ref_operatordynanaam'] }}" disabled /></div>
