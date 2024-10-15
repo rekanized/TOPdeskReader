@@ -1,14 +1,22 @@
 @extends('layouts.layout')
 
 @section('content')
-    <search style="padding: 20px 0px">
+    <search style="padding: 20px 0px; display: flex">
         <input style="width: 300px" type="text" id="searchinput" placeholder="Search..." />
+        <button id="searchbtn" style="margin: 0px 8px; border-radius: 4px" class="btn btn-blue">Search</button>
     </search>
-    <div id="searchresults"></div>
-
+    <div id="searchresults">
+        <p>Welcome to the TOPdesk Reader, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
+    </div>
     <script>
+        let searchBtn = document.querySelector('#searchbtn');
+        searchBtn.addEventListener("click",search);
 
-        document.querySelector('#searchinput').addEventListener("change",debounce(search));
+        $(document).keyup(function(event) {
+            if (event.keyCode === 13) {
+                searchBtn.click();
+            }
+        });
 
         function search(){
             let searchBox = document.querySelector('#searchresults');
