@@ -13,7 +13,7 @@
                 <div class="fielddata"><p><b>Brief description</b></p><input type="text" value="{{ $ticket['korteomschrijving'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Ticket type</b></p><input type="text" value="{{ $ticket['ref_soortmelding'] }}" disabled /></div>
                 <div class="fielddata"><p><b>Categorization</b></p><input type="text" value="{{ ($ticket['ref_domein']) != null ? $ticket['ref_domein'] . ' > ' . $ticket['ref_specificatie'] : "" }}" disabled /></div>
-                <div class="fielddata"><p><b>Priority</b></p><input type="text"  value="{{ $ticket['impact'] . ' > ' . $ticket['urgency'] . ' > ' . $ticket['priority'] }}" disabled /></div>
+                <div class="fielddata"><p><b>Priority</b></p><input type="text"  value="{{ ($ticket['impact']) != null ? $ticket['impact'] . ' > ' . $ticket['urgency'] . ' > ' . $ticket['priority'] : "" }}" disabled /></div>
                 <div class="fielddata"><p><b>Creation date</b></p><input type="text"  value="{{ $ticket['dataanmk'] }}" disabled /></div>
             </div>
             <div id="request">

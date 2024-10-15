@@ -36,6 +36,14 @@
         container.appendChild(loader);
     }
 
+    function debounce(func, timeout = 300){
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+    }
+
     function loadJsonData(url,outputContainer,runFunction){
         $.ajax({
             url: url,
@@ -49,7 +57,10 @@
             error: function(jqXHR, textStatus, errorThrown) {
                 // Handle the error response
                 console.error('Error:', textStatus, errorThrown);
-                outputContainer.html('<p>An error occurred while fetching data.</p>');
+                $(outputContainer).html('<p class="errormessage">An error occurred while fetching data.</p>');
+                if (errorThrown == "Not Found"){
+                    $(outputContainer).html('<p class="errormessage">'+jqXHR.responseJSON.error+'</p>');
+                }
             },
             complete: function(){
                 $(outputContainer).find('.loader').fadeOut(100,function(){$(this).remove()});

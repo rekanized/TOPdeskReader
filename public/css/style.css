@@ -70,10 +70,17 @@ input[type=checkbox] {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.ticketperson {
+    background-color: #c9c9c9;
+    border-radius: 4px;
+    padding: 8px;
+    margin-left: auto;
+}
 .fielddata {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-size: 14px;
 }
 .fielddata p {
     padding: 0px 16px;
@@ -94,7 +101,7 @@ input[type=checkbox] {
 .sectiontitle {
     margin: 20px;
     font-weight: bold;
-    font-size: 32px;
+    font-size: 26px;
     text-align: center;
 }
 #cardcontainer {
@@ -115,7 +122,7 @@ input[type=checkbox] {
 #carddata > .title, #request > .title {
     border-bottom: 1px solid #d5d3d3;
     padding: 16px;
-    font-size: 24px;
+    font-size: 18px;
     margin: 16px 0px;
     font-weight: bold;
 }
@@ -242,6 +249,14 @@ input[type=checkbox] {
 }
 iframe {
     border: none;
+}
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.errormessage {
+    text-align: center;
 }
 
 /* LOADER */

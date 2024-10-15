@@ -22,19 +22,20 @@ class DataController extends Controller
         try {
             // Prepare the SQL query
             $dbQuery = $dbConnection->prepare(
-                "SELECT TOP 10 *
+                "SELECT TOP 20 *
                 FROM (
-                    SELECT unid AS topdesk_id, naam AS id, korteomschrijving AS description, 'ticket' AS type FROM incident
+                    SELECT unid AS topdesk_id, naam AS id, korteomschrijving AS description, aanmeldernaam AS person, 'ticket' AS type FROM incident
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, 'change' AS type FROM [change]
+                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, aanmeldernaam AS person, 'change' AS type FROM [change]
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, 'changeactivity' AS type FROM changeactivity
+                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, '' AS person, 'changeactivity' AS type FROM changeactivity
                 ) AS data
-                WHERE id LIKE :searchvalue"
+                WHERE id LIKE :searchid OR description LIKE :searchdescription OR person LIKE :searchperson
+                ORDER BY id DESC" 
             );
 
             // Execute the query with the search value
-            $dbQuery->execute([':searchvalue' => '%' . $searchValue . '%']);
+            $dbQuery->execute([':searchid' => '%' . $searchValue . '%', ':searchdescription' => '%' . $searchValue . '%', ':searchperson' => '%' . $searchValue . '%']);
             
             // Fetch all the results
             $allTickets = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
@@ -305,7 +306,7 @@ class DataController extends Controller
                 return view('api.activities', ['changeactivities' => $changeactivities]);
             }
             else {
-                return response()->json(['error' => 'This change has no activities.']);
+                return response()->json(['error' => 'This change has no activities.'], 404);
             }
         } catch (\PDOException $e) {
             // Log the error and return an error response
