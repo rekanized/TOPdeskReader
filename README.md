@@ -17,3 +17,9 @@ If you have any questions feel free to ask for assistance.
 
 ## Example Preview
 ![TOPdeskReader](https://github.com/user-attachments/assets/dc9de91d-9324-4a4d-9c53-97bd49408874)
+
+## Installation
+* Run ``composer install`` from the root directory
+* Copy the ".env.example" file and name it ".env" and then edit the file and add your database info to the MSSQL parameters (bottom of the file)
+* Run ``php artisan key:generate`` from the root directory (this generates your APP_KEY in the .env file)
+* Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
