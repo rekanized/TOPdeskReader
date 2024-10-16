@@ -30,4 +30,5 @@ Download the appropriate drivers for your platform (Windows, Linux, or macOS) fr
         1. Follow <a href="https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac?view=sql-server-ver15">Microsoft's documentation</a> to install ODBC drivers and configure SQLSRV and PDO_SQLSRV extensions.
 4. Run ``composer install`` from the root directory
 5. Run ``php artisan key:generate`` from the root directory (this generates your APP_KEY in the .env file)
-6. Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
+6. Run ``php artisan migrate`` from the root directory (just say 'yes' to everything, it will generate the database for laravel sessions)
+7. Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
