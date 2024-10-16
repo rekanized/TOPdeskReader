@@ -24,9 +24,10 @@ If you have any questions feel free to ask for assistance.
 * Run ``php artisan key:generate`` from the root directory (this generates your APP_KEY in the .env file)
 * Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
 * Download the SQL Server Drivers
-Download the appropriate drivers for your platform (Windows, Linux, or macOS) from Microsoft's official GitHub repository:
+Download the appropriate drivers for your platform (Windows, Linux, or macOS) from Microsoft's official GitHub repository:<br>
+<br>
 <b>Windows:</b><br>
     * Go to <a href="https://github.com/microsoft/msphpsql/releases">Microsoft Drivers for PHP for SQL Server.</a><br>
-    * Download the latest release for your PHP version (make sure to match your PHP version, like PHP 7.4, 8.0, etc.).
+    * Download the latest release for your PHP version (make sure to match your PHP version, like PHP 7.4, 8.0, etc.).<br>
 <b>Linux/macOS:</b><br>
     * Follow <a href="https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac?view=sql-server-ver15">Microsoft's documentation</a> to install ODBC drivers and configure SQLSRV and PDO_SQLSRV extensions.
