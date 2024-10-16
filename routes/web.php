@@ -17,4 +17,6 @@ Route::get('/api/requests', [DataController::class, 'requests']);
 
 Route::get('/api/customers', [DataController::class, 'customers']);
 
+Route::get('/api/exporter', [DataController::class, 'ticketexporter']);
+
 Route::get('/api/tickets/{unid}/activities', [DataController::class, 'changeactivities']);

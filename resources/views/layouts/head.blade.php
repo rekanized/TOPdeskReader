@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/js/xlsx.js"></script>
 <style>
     .material-symbols-outlined {
         font-variation-settings:
@@ -51,6 +52,14 @@
         };
     }
 
+    function exportDataToExcel(data,reportname) {
+        filename = reportname+'.xlsx';
+        var ws = XLSX.utils.json_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Report");
+        XLSX.writeFile(wb,filename);
+    }
+
     function loadJsonData(url,outputContainer,runFunction){
         $.ajax({
             url: url,
@@ -80,19 +89,19 @@
         window.location.href = "/tickets/"+encodeURIComponent(ticketId);
     }
 
-    function goToTicketPopup(){
-        let ticketId = this.querySelector('.ticketid').innerHTML;
-
+    function openPopup(headerName,container,popupStyle){
+        function closePopup(){
+            this.parentNode.parentNode.remove();
+        }
         let popupContainer = document.createElement('div');
         popupContainer.classList.add('popupcontainer');
 
         let popupWindow = document.createElement('div');
-        popupWindow.classList.add('ticketpopupwindow');
         popupWindow.classList.add('popupwindow');
 
         let popupHeader = document.createElement('div');
         popupHeader.classList.add('popupheader');
-        popupHeader.appendChild(document.createTextNode(ticketId));
+        popupHeader.appendChild(document.createTextNode(headerName));
 
         let popupCloser = document.createElement('div');
         popupCloser.classList.add('popupcloser');
@@ -101,22 +110,26 @@
         popupCloser.innerHTML = '&#x2716;';
         popupCloser.addEventListener("click",closePopup);
 
+        Object.assign(popupWindow.style, popupStyle);
+
         popupWindow.appendChild(popupHeader);
         popupWindow.appendChild(popupCloser);
 
-        let ticketIframe = document.createElement('iframe');
-        ticketIframe.classList.add('ticketpopup');
-        ticketIframe.setAttribute('src','/tickets/'+encodeURIComponent(ticketId));
-
-        popupWindow.appendChild(ticketIframe);
-
+        popupWindow.appendChild(container);
+        
         popupContainer.appendChild(popupWindow);
 
         document.querySelector('main').appendChild(popupContainer);
     }
 
-    function closePopup(){
-        this.parentNode.parentNode.remove();
+    function goToTicketPopup(){
+        let ticketId = this.querySelector('.ticketid').innerHTML;
+
+        let ticketIframe = document.createElement('iframe');
+        ticketIframe.classList.add('ticketpopup');
+        ticketIframe.setAttribute('src','/tickets/'+encodeURIComponent(ticketId));
+
+        openPopup(ticketId,ticketIframe,{width: "800px",height: "80%"});
     }
 </script>
 <title>TOPdesk Reader</title>

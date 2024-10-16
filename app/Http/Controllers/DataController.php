@@ -82,9 +82,56 @@ class DataController extends Controller
         }
     }
 
-    public function show($id, DatabaseController $Database){
+    public function ticketexporter(Request $request, DatabaseController $DatabaseController){
+        $dbConnection = $DatabaseController->connect();
+
+        $customerValue = $request->query('customer');
+
+        if (!$dbConnection) {
+            // Handle the case where the connection fails
+            return response()->json(['error' => 'Database connection failed'], 500);
+        }
+
+        try {
+            // Prepare the SQL query
+            $dbQuery = $dbConnection->prepare(
+                "SELECT *
+                FROM (
+                    SELECT naam AS id, korteomschrijving AS description, aanmeldervestigingid AS customerid, 'ticket' AS type FROM incident
+                    UNION ALL
+                    SELECT [number] AS id, briefdescription AS description, aanmeldervestigingid AS customerid, 'change' AS type FROM [change]
+                ) AS data
+                WHERE customerid = :id"
+            );
+
+            // Execute the query with the search value
+            $dbQuery->execute([':id' => $customerValue]);
+            
+            // Fetch the results
+            $tickets = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Ensure $ticket is not false
+            if ($tickets) {
+                // Return the ticket results in the view
+                return view('api.exporter', ['tickets' => $tickets]);
+            } else {
+                return response()->json(['error' => 'No tickets found.'], 404);
+            }
+        } catch (\PDOException $e) {
+            // Log the error and return an error response
+            \Log::error('Query failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while exportering tickets.'], 500);
+        }
+    }
+
+    public function show($id, DatabaseController $DatabaseController){
     
-        $dbConnection = $Database->connect();
+        $dbConnection = $DatabaseController->connect();
+
+        if (!$dbConnection) {
+            // Handle the case where the connection fails
+            return response()->json(['error' => 'Database connection failed'], 500);
+        }
         
         try {
             // Prepare the SQL query
@@ -229,9 +276,14 @@ class DataController extends Controller
         }
     }
 
-    public function requests(Request $request, DatabaseController $Database){
+    public function requests(Request $request, DatabaseController $DatabaseController){
     
-        $dbConnection = $Database->connect();
+        $dbConnection = $DatabaseController->connect();
+
+        if (!$dbConnection) {
+            // Handle the case where the connection fails
+            return response()->json(['error' => 'Database connection failed'], 500);
+        }
 
         $id = $request->query('unid');
         $type = $request->query('type');
@@ -288,9 +340,14 @@ class DataController extends Controller
         }
     }
 
-    public function comments(Request $request, DatabaseController $Database){
+    public function comments(Request $request, DatabaseController $DatabaseController){
     
-        $dbConnection = $Database->connect();
+        $dbConnection = $DatabaseController->connect();
+
+        if (!$dbConnection) {
+            // Handle the case where the connection fails
+            return response()->json(['error' => 'Database connection failed'], 500);
+        }
         
         $id = $request->query('unid');
         $type = $request->query('type');
@@ -346,8 +403,13 @@ class DataController extends Controller
             return response()->json(['error' => 'An error occurred while searching tickets.'], 500);
         }
     }
-    public function changeactivities($unid, DatabaseController $Database){
-        $dbConnection = $Database->connect();
+    public function changeactivities($unid, DatabaseController $DatabaseController){
+        $dbConnection = $DatabaseController->connect();
+
+        if (!$dbConnection) {
+            // Handle the case where the connection fails
+            return response()->json(['error' => 'Database connection failed'], 500);
+        }
 
         try {
             $dbQuery = $dbConnection->prepare(
@@ -377,8 +439,13 @@ class DataController extends Controller
         }
     }
 
-    public function customers(DatabaseController $Database){
-        $dbConnection = $Database->connect();
+    public function customers(DatabaseController $DatabaseController){
+        $dbConnection = $DatabaseController->connect();
+
+        if (!$dbConnection) {
+            // Handle the case where the connection fails
+            return response()->json(['error' => 'Database connection failed'], 500);
+        }
 
         try {
             $dbQuery = $dbConnection->prepare(

@@ -3,18 +3,19 @@
 @section('content')
     <search style="padding: 20px 0px; display: flex;align-items: flex-end;">
         <div style="margin: 0px 8px">
-            <div>Customer</div>
-            <select id="customerfilter" style="padding-top: 8px;"></select>
+            <div class="searchtitle">Customer</div>
+            <select id="customerfilter"></select>
         </div>
         <div style="margin: 0px 8px">
-            <div>Search</div>
-            <input style="width: 300px" type="text" id="searchinput" placeholder="Search..." />
-        </div>
-        <div style="margin: 0px 8px">
-            <div>Type</div>
+            <div class="searchtitle">Search type</div>
             <select id="typefilter"><option value="all">All</option><option value="ticketid">Ticket ID</option><option value="person">Person</option><option value="briefdescription">Brief description</option></select>
         </div>
-        <button id="searchbtn" style="margin: 0px; border-radius: 4px" class="btn btn-blue">Search</button>
+        <div style="margin: 0px 8px">
+            <div class="searchtitle">Search</div>
+            <input style="width: 300px" type="text" id="searchinput" />
+        </div>
+        <button id="searchbtn" style="margin: 0px 8px; border-radius: 4px;align-self: end;" class="btn btn-blue">Search</button>
+        <button id="exportbtn" style="margin: 0px 8px; border-radius: 4px;align-self: end;" class="btn btn-green">Export</button>
     </search>
     <div id="searchresults">
         <p>Welcome to the TOPdesk Reader, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
@@ -27,6 +28,54 @@
             if (event.keyCode === 13) {
                 searchBtn.click();
             }
+        });
+
+        document.querySelector('#exportbtn').addEventListener("click",function(){
+
+            let exporterContainer = document.createElement('div');
+            exporterContainer.style.padding = "20px";
+            exporterContainer.style.display = "flex";
+            exporterContainer.style.justifyContent = "center";
+            exporterContainer.style.flexDirection = "column";
+
+            let exporterBtn = document.createElement('button');
+            exporterBtn.classList.add('btn');
+            exporterBtn.classList.add('btn-green');
+            exporterBtn.innerText = "Export";
+
+            let customerExporterList = document.createElement('select');
+            customerExporterList.setAttribute('id','customernameselect');
+
+            let exportCustomers;
+
+            loadJsonData('/api/customers',customerExporterList,function(data){
+                data.forEach(function(customer){
+                    if (customer.status < 0){
+                        customerExporterList.appendChild(returnSelectOption(customer.naam+' (Archived)',customer.unid));
+                        return;
+                    }
+                    customerExporterList.appendChild(returnSelectOption(customer.naam,customer.unid));
+                });
+
+                exportCustomers = data;
+
+                exporterBtn.addEventListener("click",function(){
+
+                    let customerId = document.querySelector('#customernameselect').value;
+
+                    loadJsonData('/api/exporter?customer='+encodeURIComponent(customerId),customerExporterList,function(data){
+                        let date = (new Date().toISOString().split('T')[0]).replaceAll("-","");
+                        reportName = 'report' + date;
+                        exportDataToExcel(data,reportName);
+                    });
+                });
+
+            });
+
+            exporterContainer.appendChild(customerExporterList);
+            exporterContainer.appendChild(exporterBtn);
+
+            openPopup("Ticket exporter",exporterContainer,{width: "800px"});
         });
 
         function search(){
@@ -81,17 +130,15 @@
             });
         }
 
-        $(document).ready(function(){
-            let customerFilter = document.querySelector('#customerfilter');
-            loadJsonData('/api/customers',customerFilter,function(data){
-                customerFilter.appendChild(returnSelectOption('All','all'));
-                data.forEach(function(customer){
-                    if (customer.status < 0){
-                        customerFilter.appendChild(returnSelectOption(customer.naam+' (Archived)',customer.unid));
-                        return;
-                    }
-                    customerFilter.appendChild(returnSelectOption(customer.naam,customer.unid));
-                });
+        let customerFilter = document.querySelector('#customerfilter');
+        loadJsonData('/api/customers',customerFilter,function(data){
+            customerFilter.appendChild(returnSelectOption('All','all'));
+            data.forEach(function(customer){
+                if (customer.status < 0){
+                    customerFilter.appendChild(returnSelectOption(customer.naam+' (Archived)',customer.unid));
+                    return;
+                }
+                customerFilter.appendChild(returnSelectOption(customer.naam,customer.unid));
             });
         });
     </script>
