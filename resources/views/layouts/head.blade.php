@@ -1,5 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=no">
+<link rel="icon" type="image/png" href="/images/favicon.png" />
 <link rel="stylesheet" type="text/css" href="/css/style.css" />
 <link rel="stylesheet" type="text/css" href="/css/buttons.css" />
 <link rel="icon" type="image/png" href="/favicon.png" />
@@ -132,4 +133,4 @@
         openPopup(ticketId,ticketIframe,{width: "800px",height: "80%"});
     }
 </script>
-<title>TOPdesk Reader</title>
+<title>NEXTdesk Database Viewer</title>
