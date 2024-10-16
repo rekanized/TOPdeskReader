@@ -97,11 +97,44 @@ class DataController extends Controller
             $dbQuery = $dbConnection->prepare(
                 "SELECT *
                 FROM (
-                    SELECT naam AS id, korteomschrijving AS description, aanmeldervestigingid AS customerid, 'ticket' AS type FROM incident
+                    SELECT incident.dataanmk AS [Call Date], 
+                        incident.naam AS [Ticket Number], 
+                        incident.korteomschrijving AS [Brief Description (Details)], 
+                        incident.aanmeldernaam AS [Caller name], 
+                        incident.ref_vestiging AS [Customer (Caller)], 
+                        incident.ref_soortmelding AS [Ticket Type], 
+                        incident.ref_status AS [Status], 
+                        incident.ref_operatordynanaam AS [Operator], 
+                        incident.ref_domein AS [Category], 
+                        incident.ref_specificatie AS [Subcategory], 
+                        'Ticket' AS [Case Type], 
+                        incident.ref_operatorgroup AS [Operator Group],
+                        priority.naam AS [Priority], 
+                        incident.aanmeldervestigingid AS [Customer ID] 
+                        FROM incident LEFT OUTER JOIN 
+                        priority ON incident.priorityid = priority.unid
                     UNION ALL
-                    SELECT [number] AS id, briefdescription AS description, aanmeldervestigingid AS customerid, 'change' AS type FROM [change]
+                    SELECT change.dataanmk AS [Call Date], 
+                        change.[number] AS [Ticket Number], 
+                        change.briefdescription AS [Brief Description (Details)], 
+                        change.aanmeldernaam AS [Caller name], 
+                        change.ref_caller_branch_name AS [Customer (Caller)], 
+                        change.ref_type_name AS [Ticket Type],
+                        status.naam AS [Status], 
+                        operator.ref_dynanaam AS [Operator],
+                        change.ref_category_name AS [Category], 
+                        change.ref_subcategory_name AS [Subcategory], 
+                        CASE WHEN changetype = 1 THEN 'Standard change' ELSE 'Change' END AS [Case Type], 
+                        operatorgroup.ref_dynanaam AS [Operator Group],
+                        priority.naam AS [Priority], 
+                        change.aanmeldervestigingid AS [Customer ID] 
+                        FROM change LEFT OUTER JOIN
+                        wijzigingstatus AS status ON change.statusid = status.unid LEFT OUTER JOIN
+                        actiedoor AS operator ON change.operatorid = operator.unid LEFT OUTER JOIN
+                        actiedoor AS operatorgroup ON change.operatorgroupid = operatorgroup.unid LEFT OUTER JOIN 
+                        change_priority AS priority ON change.priorityid = priority.unid
                 ) AS data
-                WHERE customerid = :id"
+                WHERE [Customer ID] = :id"
             );
 
             // Execute the query with the search value
