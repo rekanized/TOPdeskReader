@@ -73,7 +73,7 @@ class DataController extends Controller
             $allTickets = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
 
             // Return the search results in the view
-            return view('api.search', ['allTickets' => $allTickets]);
+            return view('api.outputjson', ['jsondata' => $allTickets]);
 
         } catch (\PDOException $e) {
             // Log the error and return an error response
@@ -113,7 +113,7 @@ class DataController extends Controller
             // Ensure $ticket is not false
             if ($tickets) {
                 // Return the ticket results in the view
-                return view('api.exporter', ['tickets' => $tickets]);
+                return view('api.outputjson', ['jsondata' => $tickets]);
             } else {
                 return response()->json(['error' => 'No tickets found.'], 404);
             }
@@ -329,7 +329,7 @@ class DataController extends Controller
 
             // Ensure $ticket is not false
             if ($ticketData) {
-                return view('api.requests', ['requests' => $ticketData]);
+                return view('api.outputjson', ['jsondata' => $ticketData]);
             } else {
                 return response()->json(['error' => 'No requests found.'], 404);
             }
@@ -393,7 +393,7 @@ class DataController extends Controller
 
             // Ensure $ticket is not false
             if ($ticketData) {
-                return view('api.comments', ['comments' => $ticketData]);
+                return view('api.outputjson', ['jsondata' => $ticketData]);
             } else {
                 return response()->json(['error' => 'No comments found.'], 404);
             }
@@ -427,7 +427,7 @@ class DataController extends Controller
 
             // Ensure $ticket is not false
             if ($changeactivities) {
-                return view('api.activities', ['changeactivities' => $changeactivities]);
+                return view('api.outputjson', ['jsondata' => $changeactivities]);
             }
             else {
                 return response()->json(['error' => 'This change has no activities.'], 404);
@@ -462,7 +462,7 @@ class DataController extends Controller
 
             // Ensure $customers is not false
             if ($customers) {
-                return view('api.customers', ['customers' => $customers]);
+                return view('api.outputjson', ['jsondata' => $customers]);
             }
             else {
                 return response()->json(['error' => 'Found no customers.'], 404);
