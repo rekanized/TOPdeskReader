@@ -18,7 +18,7 @@
         <button id="exportbtn" style="margin: 0px 8px; border-radius: 4px;align-self: end;" class="btn btn-green">Export</button>
     </search>
     <div id="searchresults">
-        <p>Welcome to the TOPdesk Reader, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
+        <p>Welcome to the NEXTdesk Database Viewer, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
     </div>
     <script>
         let searchBtn = document.querySelector('#searchbtn');
