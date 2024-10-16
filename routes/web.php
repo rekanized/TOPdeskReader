@@ -15,4 +15,6 @@ Route::get('/api/comments', [DataController::class, 'comments']);
 
 Route::get('/api/requests', [DataController::class, 'requests']);
 
+Route::get('/api/customers', [DataController::class, 'customers']);
+
 Route::get('/api/tickets/{unid}/activities', [DataController::class, 'changeactivities']);

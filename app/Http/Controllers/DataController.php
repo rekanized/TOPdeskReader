@@ -18,24 +18,56 @@ class DataController extends Controller
 
         // Get the search value from the query string
         $searchValue = $request->query('searchvalue');
+        $customerValue = $request->query('customerfilter');
+        $typeValue = $request->query('typefilter');
 
         try {
+
+            $searchParameters = [];
+            if ($customerValue != "all"){
+                $customerFilter = "customerid = :searchcustomer";
+                $searchParameters[':searchcustomer'] = $customerValue;
+            }
+            if ($typeValue == "all"){
+                $typeFilter = "id LIKE :searchid OR description LIKE :searchdescription OR person LIKE :searchperson";
+                $searchParameters[':searchid'] = '%' . $searchValue . '%';
+                $searchParameters[':searchdescription'] = '%' . $searchValue . '%';
+                $searchParameters[':searchperson'] = '%' . $searchValue . '%';
+            }
+            else if ($typeValue == "person"){
+                $typeFilter = "person LIKE :searchperson";
+                $searchParameters[':searchperson'] = '%' . $searchValue . '%';
+            }
+            else if ($typeValue == "ticketid"){
+                $typeFilter = "id LIKE :searchid";
+                $searchParameters[':searchid'] = '%' . $searchValue . '%';
+            }
+            else if ($typeValue == "briefdescription"){
+                $typeFilter = "briefdescription LIKE :searchdescription";
+                $searchParameters[':searchdescription'] = '%' . $searchValue . '%';
+            }
+
+            $whereFilter = "WHERE $typeFilter";
+            if (isset($customerFilter)){
+                $whereFilter = "WHERE ".join(" AND ",[$customerFilter,'('.$typeFilter.')']);
+            }
+
             // Prepare the SQL query
             $dbQuery = $dbConnection->prepare(
-                "SELECT TOP 20 *
+                "SELECT TOP 1000 *
                 FROM (
-                    SELECT unid AS topdesk_id, naam AS id, korteomschrijving AS description, status, aanmeldernaam AS person, 'ticket' AS type FROM incident
+                    SELECT unid AS topdesk_id, naam AS id, aanmeldervestigingid AS customerid, korteomschrijving AS description, status, aanmeldernaam AS person, 'ticket' AS type FROM incident
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, status, aanmeldernaam AS person, 'change' AS type FROM [change]
+                    SELECT unid AS topdesk_id, [number] AS id, aanmeldervestigingid AS customerid, briefdescription AS description, status, aanmeldernaam AS person, 'change' AS type FROM [change]
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, briefdescription AS description, status, '' AS person, 'changeactivity' AS type FROM changeactivity
+                    SELECT unid AS topdesk_id, [number] AS id, '60349ef8-9de4-4c56-809c-31ca6f4962c4' AS customerid, briefdescription AS description, status, '' AS person, 'changeactivity' AS type FROM changeactivity
                 ) AS data
-                WHERE id LIKE :searchid OR description LIKE :searchdescription OR person LIKE :searchperson
+                $whereFilter
                 ORDER BY id DESC" 
             );
 
             // Execute the query with the search value
-            $dbQuery->execute([':searchid' => '%' . $searchValue . '%', ':searchdescription' => '%' . $searchValue . '%', ':searchperson' => '%' . $searchValue . '%']);
+            $dbQuery->execute($searchParameters);
             
             // Fetch all the results
             $allTickets = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
@@ -342,6 +374,36 @@ class DataController extends Controller
             // Log the error and return an error response
             \Log::error('Query failed: ' . $e->getMessage());
             return response()->json(['error' => 'An error occurred while retrieving changeactivities.'], 500);
+        }
+    }
+
+    public function customers(DatabaseController $Database){
+        $dbConnection = $Database->connect();
+
+        try {
+            $dbQuery = $dbConnection->prepare(
+                "SELECT unid,naam,status
+                FROM vestiging
+                ORDER BY naam"
+            );
+
+            // Execute the query with the search value
+            $dbQuery->execute();
+            
+            // Fetch the results
+            $customers = $dbQuery->fetchAll(\PDO::FETCH_ASSOC);
+
+            // Ensure $customers is not false
+            if ($customers) {
+                return view('api.customers', ['customers' => $customers]);
+            }
+            else {
+                return response()->json(['error' => 'Found no customers.'], 404);
+            }
+        } catch (\PDOException $e) {
+            // Log the error and return an error response
+            \Log::error('Query failed: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while retrieving customers.'], 500);
         }
     }
 }

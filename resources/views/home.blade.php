@@ -1,9 +1,20 @@
 @extends('layouts.layout')
 
 @section('content')
-    <search style="padding: 20px 0px; display: flex">
-        <input style="width: 300px" type="text" id="searchinput" placeholder="Search..." />
-        <button id="searchbtn" style="margin: 0px 8px; border-radius: 4px" class="btn btn-blue">Search</button>
+    <search style="padding: 20px 0px; display: flex;align-items: flex-end;">
+        <div style="margin: 0px 8px">
+            <div>Customer</div>
+            <select id="customerfilter" style="padding-top: 8px;"></select>
+        </div>
+        <div style="margin: 0px 8px">
+            <div>Search</div>
+            <input style="width: 300px" type="text" id="searchinput" placeholder="Search..." />
+        </div>
+        <div style="margin: 0px 8px">
+            <div>Type</div>
+            <select id="typefilter"><option value="all">All</option><option value="ticketid">Ticket ID</option><option value="person">Person</option><option value="briefdescription">Brief description</option></select>
+        </div>
+        <button id="searchbtn" style="margin: 0px; border-radius: 4px" class="btn btn-blue">Search</button>
     </search>
     <div id="searchresults">
         <p>Welcome to the TOPdesk Reader, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
@@ -60,13 +71,28 @@
             }
 
             let searchValue = document.querySelector('#searchinput').value;
-
-            loadJsonData('/tickets?searchvalue='+encodeURIComponent(searchValue),searchBox,function(data) {
+            let customerFilter = document.querySelector('#customerfilter').value;
+            let typeFilter = document.querySelector('#typefilter').value;
+            loadJsonData('/tickets?searchvalue='+encodeURIComponent(searchValue)+'&customerfilter='+encodeURIComponent(customerFilter)+'&typefilter='+encodeURIComponent(typeFilter),searchBox,function(data) {
                 $(searchBox).empty(); // Clear previous results
                 data.forEach(function(ticket) {
                     searchBox.append(returnTicketBox(ticket.id,ticket.type,ticket.description,ticket.person,ticket.status));
                 });
             });
         }
+
+        $(document).ready(function(){
+            let customerFilter = document.querySelector('#customerfilter');
+            loadJsonData('/api/customers',customerFilter,function(data){
+                customerFilter.appendChild(returnSelectOption('All','all'));
+                data.forEach(function(customer){
+                    if (customer.status < 0){
+                        customerFilter.appendChild(returnSelectOption(customer.naam+' (Archived)',customer.unid));
+                        return;
+                    }
+                    customerFilter.appendChild(returnSelectOption(customer.naam,customer.unid));
+                });
+            });
+        });
     </script>
 @endsection

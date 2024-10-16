@@ -36,6 +36,13 @@
         container.appendChild(loader);
     }
 
+    function returnSelectOption(displayName,value){
+        let option = document.createElement('option');
+        option.value = value;
+        option.innerText = displayName;
+        return option;
+    }
+
     function debounce(func, timeout = 300){
         let timer;
         return (...args) => {
