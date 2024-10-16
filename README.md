@@ -26,8 +26,8 @@ If you have any questions feel free to ask for assistance.
 * Download the SQL Server Drivers
 Download the appropriate drivers for your platform (Windows, Linux, or macOS) from Microsoft's official GitHub repository:
 
-<b>Windows:</b>
+<b>Windows:</b><br>
     * Go to <a href="https://github.com/microsoft/msphpsql/releases">Microsoft Drivers for PHP for SQL Server.</a>
     * Download the latest release for your PHP version (make sure to match your PHP version, like PHP 7.4, 8.0, etc.).
-<b>Linux/macOS:</b>
+<b>Linux/macOS:</b><br>
     * Follow <a href="https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac?view=sql-server-ver15">Microsoft's documentation</a> to install ODBC drivers and configure SQLSRV and PDO_SQLSRV extensions.
