@@ -16,7 +16,8 @@ MSSQL_PASSWORD=""
 If you have any questions feel free to ask for assistance.
 
 ## Example Preview
-![TOPdeskReader](https://github.com/user-attachments/assets/dc9de91d-9324-4a4d-9c53-97bd49408874)
+![deskTOP](https://github.com/user-attachments/assets/8858dc49-ac20-4c51-b095-d50f18f69d47)
+
 
 ## Installation
 1. Copy the ".env.example" file and name it ".env" and then edit the file and add your database info to the MSSQL parameters (bottom of the file)
