@@ -29,7 +29,8 @@ Download the appropriate drivers for your platform (Windows, Linux, or macOS) fr
         2. Download the latest release for your PHP version (make sure to match your PHP version, like PHP 7.4, 8.0, etc.).
     2. <b>Linux/macOS:</b>
         1. Follow <a href="https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac?view=sql-server-ver15">Microsoft's documentation</a> to install ODBC drivers and configure SQLSRV and PDO_SQLSRV extensions.
+        2. Run ``sudo apt install -y php8.2 php8.2-cli php8.2-fpm php8.2-mysql php8.2-xml php8.2-mbstring php8.2-curl php8.2-zip php8.2-bcmath php8.2-gd php8.2-soap`` Change to your version of PHP
 4. Run ``composer install`` from the root directory
-5. Run ``php artisan key:generate`` from the root directory (this generates your APP_KEY in the .env file)
-6. Run ``php artisan migrate`` from the root directory (just say 'yes' to everything, it will generate the database for laravel sessions)
-7. Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
+6. Run ``php artisan key:generate`` from the root directory (this generates your APP_KEY in the .env file)
+7. Run ``php artisan migrate`` from the root directory (just say 'yes' to everything, it will generate the database for laravel sessions)
+8. Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
