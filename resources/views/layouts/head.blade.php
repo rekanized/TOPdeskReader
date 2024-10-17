@@ -133,4 +133,4 @@
         openPopup(ticketId,ticketIframe,{width: "800px",height: "80%"});
     }
 </script>
-<title>NEXTdesk Database Viewer</title>
+<title>deskTOP Database Viewer</title>
