@@ -7,7 +7,7 @@
             window.location.href = "/";
         });
         function toggleDarkMode(){
-            $.get("/api/toggleDarkMode");
+            $.get("/toggleDarkMode");
             setTimeout(function(){window.location.reload(),500});
         }
     </script>
