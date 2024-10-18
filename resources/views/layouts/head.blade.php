@@ -3,7 +3,6 @@
 <link rel="icon" type="image/png" href="/images/favicon.png" />
 <link rel="stylesheet" type="text/css" href="/css/style.css" />
 <link rel="stylesheet" type="text/css" href="/css/buttons.css" />
-<link rel="icon" type="image/png" href="/favicon.png" />
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
