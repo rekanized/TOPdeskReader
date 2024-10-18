@@ -17,7 +17,7 @@
         color: #0369a1;
     }
 </style>
-@if (session('darkmode') == true)
+@if (session('darkmode') == 1)
     <style>
         html {
             color: white !important;
