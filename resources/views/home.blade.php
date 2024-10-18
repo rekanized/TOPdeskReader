@@ -4,7 +4,7 @@
     <search id="searchcontainer">
         <div style="margin: 0px 8px">
             <div class="searchtitle">Customer</div>
-            <select id="customerfilter"></select>
+            <select id="customerfilter" style="max-width: 400px"></select>
         </div>
         <div style="margin: 0px 8px">
             <div class="searchtitle">Search type</div>
