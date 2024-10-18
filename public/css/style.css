@@ -112,6 +112,12 @@ input[type=checkbox] {
     justify-content: space-between;
     font-size: 14px;
 }
+@media screen and (max-width: 1300px) {
+    .fielddata {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
 .fielddata p {
     padding: 0px 16px;
 }
