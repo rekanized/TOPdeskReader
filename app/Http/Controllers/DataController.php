@@ -43,7 +43,7 @@ class DataController extends Controller
                 $searchParameters[':searchid'] = '%' . $searchValue . '%';
             }
             else if ($typeValue == "briefdescription"){
-                $typeFilter = "briefdescription LIKE :searchdescription";
+                $typeFilter = "description LIKE :searchdescription";
                 $searchParameters[':searchdescription'] = '%' . $searchValue . '%';
             }
 
