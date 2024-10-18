@@ -26,8 +26,6 @@ Route::get('/api/toggleDarkMode', function(){
     else {
         session(['darkmode' => false]);
     }
-
-    return view('home');
 });
 
 Route::get('/api/tickets/{unid}/activities', [DataController::class, 'changeactivities']);
