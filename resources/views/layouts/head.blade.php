@@ -23,7 +23,7 @@
     <style>
         html {
             color: white !important;
-            background-color: black !important;
+            background-color: #373737 !important;
         }
         .popupheader, header, footer, .ticket, iframe {
             background-color: #6e6e6e !important;
