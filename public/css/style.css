@@ -42,6 +42,31 @@ input[type=checkbox] {
     accent-color: #2e6da4;
 }
 
+#searchcontainer {
+    padding: 20px 0px; 
+    display: flex;
+    align-items: flex-end;
+}
+#searchcontainer > button {
+    margin: 0px 8px; 
+    border-radius: 4px;
+    align-self: end;
+}
+#searchresults {
+    padding: 16px;
+}
+@media screen and (max-width: 1300px) {
+    #searchcontainer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    #searchcontainer > button {
+        margin: 8px; 
+        border-radius: 4px;
+        align-self: inherit;
+    }
+}
+
 .searchtitle {
     font-weight: bold;
     margin: 4px 8px;

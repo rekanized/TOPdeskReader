@@ -99,6 +99,7 @@ class DataController extends Controller
                 FROM (
                     SELECT incident.dataanmk AS [Call Date], 
                         incident.naam AS [Ticket Number], 
+                        CASE WHEN incident.status > 0 THEN 'false' ELSE 'true' END AS [Archived],
                         incident.korteomschrijving AS [Brief Description (Details)], 
                         incident.aanmeldernaam AS [Caller name], 
                         incident.ref_vestiging AS [Customer (Caller)], 
@@ -116,6 +117,7 @@ class DataController extends Controller
                     UNION ALL
                     SELECT change.dataanmk AS [Call Date], 
                         change.[number] AS [Ticket Number], 
+                        CASE WHEN change.status > 0 THEN 'false' ELSE 'true' END AS [Archived],
                         change.briefdescription AS [Brief Description (Details)], 
                         change.aanmeldernaam AS [Caller name], 
                         change.ref_caller_branch_name AS [Customer (Caller)], 

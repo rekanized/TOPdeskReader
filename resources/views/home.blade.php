@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
-    <search style="padding: 20px 0px; display: flex;align-items: flex-end;">
+    <search id="searchcontainer">
         <div style="margin: 0px 8px">
             <div class="searchtitle">Customer</div>
             <select id="customerfilter"></select>
@@ -14,8 +14,8 @@
             <div class="searchtitle">Search</div>
             <input style="width: 300px" type="text" id="searchinput" />
         </div>
-        <button id="searchbtn" style="margin: 0px 8px; border-radius: 4px;align-self: end;" class="btn btn-blue">Search</button>
-        <button id="exportbtn" style="margin: 0px 8px; border-radius: 4px;align-self: end;" class="btn btn-green">Export</button>
+        <button id="searchbtn" class="btn btn-blue">Search</button>
+        <button id="exportbtn" class="btn btn-green">Export</button>
     </search>
     <div id="searchresults">
         <p>Welcome to the deskTOP Database Viewer, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
