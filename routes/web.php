@@ -19,17 +19,11 @@ Route::get('/api/customers', [DataController::class, 'customers']);
 
 Route::get('/api/exporter', [DataController::class, 'ticketexporter']);
 
-Route::get('/toggleDarkMode', function(){
-    if (session('darkmode') != 1) {
-        session(['darkmode' => 1]);
+Route::get('/toggleDarkMode', function() {
+    $darkMode = session('darkmode', 0);
+    session(['darkmode' => $darkMode ^ 1]);
 
-        return session('darkmode');
-    }
-    else {
-        session(['darkmode' => 0]);
-
-        return session('darkmode');
-    }
+    return session('darkmode'); 
 });
 
 Route::get('/api/tickets/{unid}/activities', [DataController::class, 'changeactivities']);

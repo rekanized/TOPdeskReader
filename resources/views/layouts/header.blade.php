@@ -7,8 +7,8 @@
             window.location.href = "/";
         });
         function toggleDarkMode(){
-            $.get("/toggleDarkMode");
-            setTimeout(function(){window.location.reload(),500});
+            $.get("/toggleDarkMode", { _: new Date().getTime() });
+            setTimeout(function() { window.location.reload(); }, 500);
         }
     </script>
 </div>
