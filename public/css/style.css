@@ -130,6 +130,14 @@ input[type=checkbox] {
     flex-direction: column;
     align-items: center;
 }
+@media screen and (max-width: 1300px) {
+    #ticketcontainer {
+        padding: 20px 0px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
 #ticketid {
     font-size: 12px;
     position: absolute;
@@ -145,15 +153,18 @@ input[type=checkbox] {
     padding-bottom: 60px;
     border-bottom: 1px solid #d5d3d3
 }
-@media screen and (max-width: 1300px) {
-    #cardcontainer {
-        flex-direction: column;
-    }
-}
 #carddata {
     display: flex;
     padding: 0px 50px;
     flex-direction: column;
+}
+@media screen and (max-width: 1300px) {
+    #cardcontainer {
+        flex-direction: column;
+    }
+    #carddata {
+        padding: 0px;
+    }
 }
 #carddata > .title, #request > .title {
     border-bottom: 1px solid #d5d3d3;
@@ -182,6 +193,7 @@ input[type=checkbox] {
 @media screen and (max-width: 1300px) {
     #request {
         border-left: none;
+        padding: 0px;
     }
 }
 #relationscontainer {
@@ -214,6 +226,11 @@ input[type=checkbox] {
 #commentscontainer {
     padding: 20px;
 }
+@media screen and (max-width: 1300px) {
+    #commentscontainer {
+        padding: 20px 0px;
+    }
+}
 .comment {
     border-bottom: 1px solid grey;
     padding: 16px 0px;
@@ -229,6 +246,11 @@ input[type=checkbox] {
     display: flex;
     flex-direction: column;
     min-width: 500px;
+}
+@media screen and (max-width: 1300px) {
+    #comments {
+        min-width: 400px;
+    }
 }
 #comments > div {
     padding: 8px 16px;
