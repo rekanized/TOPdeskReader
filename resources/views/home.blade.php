@@ -11,6 +11,10 @@
             <select id="typefilter"><option value="all">All</option><option value="ticketid">Ticket ID</option><option value="person">Person</option><option value="briefdescription">Brief description</option><option value="request">Request</option></select>
         </div>
         <div style="margin: 0px 8px">
+            <div class="searchtitle">Ticket type</div>
+            <select id="tickettypefilter"><option value="all">All</option><option value="ticket">Ticket</option><option value="change">Change</option><option value="changeactivity">Change activity</option></select>
+        </div>
+        <div style="margin: 0px 8px">
             <div class="searchtitle">Search</div>
             <input style="width: 300px" type="text" id="searchinput" />
         </div>
@@ -108,21 +112,24 @@
                 ticketDescription.classList.add('ticketdescription');
                 ticketDescription.appendChild(document.createTextNode(description));
 
-                let ticketPerson = document.createElement('div');
-                ticketPerson.classList.add('ticketperson');
-                ticketPerson.appendChild(document.createTextNode(person));
-
                 ticketContainer.appendChild(ticketId);
                 ticketContainer.appendChild(ticketDescription);
-                ticketContainer.appendChild(ticketPerson);
 
+                if (type != 'changeactivity'){
+                    let ticketPerson = document.createElement('div');
+                    ticketPerson.classList.add('ticketperson');
+                    ticketPerson.appendChild(document.createTextNode(person));
+                    ticketContainer.appendChild(ticketPerson);
+                }
+                
                 return ticketContainer;
             }
 
             let searchValue = document.querySelector('#searchinput').value;
             let customerFilter = document.querySelector('#customerfilter').value;
+            let ticketTypeFilter = document.querySelector('#tickettypefilter').value;
             let typeFilter = document.querySelector('#typefilter').value;
-            loadJsonData('/tickets?searchvalue='+encodeURIComponent(searchValue)+'&customerfilter='+encodeURIComponent(customerFilter)+'&typefilter='+encodeURIComponent(typeFilter),searchBox,function(data) {
+            loadJsonData('/tickets?searchvalue='+encodeURIComponent(searchValue)+'&customerfilter='+encodeURIComponent(customerFilter)+'&tickettypefilter='+encodeURIComponent(ticketTypeFilter)+'&typefilter='+encodeURIComponent(typeFilter),searchBox,function(data) {
                 $(searchBox).empty(); // Clear previous results
                 data.forEach(function(ticket) {
                     searchBox.append(returnTicketBox(ticket.id,ticket.type,ticket.description,ticket.person,ticket.status));

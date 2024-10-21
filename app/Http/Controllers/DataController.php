@@ -19,15 +19,16 @@ class DataController extends Controller
         // Get the search value from the query string
         $searchValue = $request->query('searchvalue');
         $customerValue = $request->query('customerfilter');
+        $ticketTypeValue = $request->query('tickettypefilter');
         $typeValue = $request->query('typefilter');
 
         try {
-
             $searchParameters = [];
             if ($customerValue != "all"){
                 $customerFilter = "customerid = :searchcustomer";
                 $searchParameters[':searchcustomer'] = $customerValue;
             }
+
             if ($typeValue == "all"){
                 $typeFilter = "id LIKE :searchid OR description LIKE :searchdescription OR person LIKE :searchperson";
                 $searchParameters[':searchid'] = '%' . $searchValue . '%';
@@ -51,9 +52,20 @@ class DataController extends Controller
                 $searchParameters[':searchdescription'] = '%' . $searchValue . '%';
             }
 
+            if ($ticketTypeValue != "all"){
+                $ticketTypeFilter = "type = :searchtickettype";
+                $searchParameters[':searchtickettype'] = $ticketTypeValue;
+            }
+
             $whereFilter = "WHERE $typeFilter";
-            if (isset($customerFilter)){
+            if (isset($customerFilter) && isset($ticketTypeFilter)){
+                $whereFilter = "WHERE ".join(" AND ",[$customerFilter,$ticketTypeFilter,'('.$typeFilter.')']);
+            }
+            else if (isset($customerFilter)){
                 $whereFilter = "WHERE ".join(" AND ",[$customerFilter,'('.$typeFilter.')']);
+            }
+            else if (isset($ticketTypeFilter)){
+                $whereFilter = "WHERE ".join(" AND ",[$ticketTypeFilter,'('.$typeFilter.')']);
             }
 
             // Prepare the SQL query
