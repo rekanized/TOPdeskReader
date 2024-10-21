@@ -38,6 +38,10 @@ class DataController extends Controller
                 $typeFilter = "person LIKE :searchperson";
                 $searchParameters[':searchperson'] = '%' . $searchValue . '%';
             }
+            else if ($typeValue == "request"){
+                $typeFilter = "request LIKE :searchrequest";
+                $searchParameters[':searchrequest'] = '%' . $searchValue . '%';
+            }
             else if ($typeValue == "ticketid"){
                 $typeFilter = "id LIKE :searchid";
                 $searchParameters[':searchid'] = '%' . $searchValue . '%';
@@ -54,13 +58,13 @@ class DataController extends Controller
 
             // Prepare the SQL query
             $dbQuery = $dbConnection->prepare(
-                "SELECT TOP 1000 *
+                "SELECT TOP 100 *
                 FROM (
-                    SELECT unid AS topdesk_id, naam AS id, aanmeldervestigingid AS customerid, korteomschrijving AS description, status, aanmeldernaam AS person, 'ticket' AS type FROM incident
+                    SELECT unid AS topdesk_id, naam AS id, aanmeldervestigingid AS customerid, korteomschrijving AS description, verzoek AS request, status, aanmeldernaam AS person, 'ticket' AS type FROM incident
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, aanmeldervestigingid AS customerid, briefdescription AS description, status, aanmeldernaam AS person, 'change' AS type FROM [change]
+                    SELECT unid AS topdesk_id, [number] AS id, aanmeldervestigingid AS customerid, briefdescription AS description, description AS request, status, aanmeldernaam AS person, 'change' AS type FROM [change]
                     UNION ALL
-                    SELECT unid AS topdesk_id, [number] AS id, '60349ef8-9de4-4c56-809c-31ca6f4962c4' AS customerid, briefdescription AS description, status, '' AS person, 'changeactivity' AS type FROM changeactivity
+                    SELECT unid AS topdesk_id, [number] AS id, '60349ef8-9de4-4c56-809c-31ca6f4962c4' AS customerid, briefdescription AS description, description AS request, status, '' AS person, 'changeactivity' AS type FROM changeactivity
                 ) AS data
                 $whereFilter
                 ORDER BY id DESC" 

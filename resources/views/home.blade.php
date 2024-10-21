@@ -8,7 +8,7 @@
         </div>
         <div style="margin: 0px 8px">
             <div class="searchtitle">Search type</div>
-            <select id="typefilter"><option value="all">All</option><option value="ticketid">Ticket ID</option><option value="person">Person</option><option value="briefdescription">Brief description</option></select>
+            <select id="typefilter"><option value="all">All</option><option value="ticketid">Ticket ID</option><option value="person">Person</option><option value="briefdescription">Brief description</option><option value="request">Request</option></select>
         </div>
         <div style="margin: 0px 8px">
             <div class="searchtitle">Search</div>
@@ -18,7 +18,7 @@
         <button id="exportbtn" class="btn btn-green">Export</button>
     </search>
     <div id="searchresults">
-        <p>Welcome to the deskTOP Database Viewer, the search values you have available are <b>TicketID</b>, <b>Persons</b> or <b>Brief descriptions!</b></p>
+        <p>Welcome to the deskTOP Database Viewer, the search values you have available are <b>TicketID</b>, <b>Persons</b>, <b>Brief descriptions</b> or <b>Request!</b></p>
     </div>
     <script>
         let searchBtn = document.querySelector('#searchbtn');
