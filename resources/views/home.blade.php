@@ -18,9 +18,11 @@
             <div class="searchtitle">Search</div>
             <input style="width: 300px" type="text" id="searchinput" />
         </div>
+    </search>
+    <div style="display: flex">
         <button id="searchbtn" class="btn btn-blue">Search</button>
         <button id="exportbtn" class="btn btn-green">Export</button>
-    </search>
+    </div>
     <div id="searchresults">
         <p>Welcome to the deskTOP Database Viewer, the search values you have available are <b>TicketID</b>, <b>Persons</b>, <b>Brief descriptions</b> or <b>Request!</b></p>
     </div>

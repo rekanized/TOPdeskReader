@@ -53,17 +53,12 @@ input[type=checkbox] {
     align-self: end;
 }
 #searchresults {
-    padding: 16px;
+    padding: 16px 64px;
 }
 @media screen and (max-width: 1300px) {
     #searchcontainer {
         align-items: stretch;
         flex-direction: column;
-    }
-    #searchcontainer > button {
-        margin: 8px; 
-        border-radius: 4px;
-        align-self: inherit;
     }
 }
 
