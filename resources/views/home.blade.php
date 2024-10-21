@@ -2,19 +2,19 @@
 
 @section('content')
     <search id="searchcontainer">
-        <div style="margin: 0px 8px">
+        <div style="margin: 8px">
             <div class="searchtitle">Customer</div>
             <select id="customerfilter" style="max-width: 400px"></select>
         </div>
-        <div style="margin: 0px 8px">
+        <div style="margin: 8px">
             <div class="searchtitle">Search type</div>
             <select id="typefilter"><option value="all">All</option><option value="ticketid">Ticket ID</option><option value="person">Person</option><option value="briefdescription">Brief description</option><option value="request">Request</option></select>
         </div>
-        <div style="margin: 0px 8px">
+        <div style="margin: 8px">
             <div class="searchtitle">Ticket type</div>
             <select id="tickettypefilter"><option value="all">All</option><option value="ticket">Ticket</option><option value="change">Change</option><option value="changeactivity">Change activity</option></select>
         </div>
-        <div style="margin: 0px 8px">
+        <div style="margin: 8px">
             <div class="searchtitle">Search</div>
             <input style="width: 300px" type="text" id="searchinput" />
         </div>
