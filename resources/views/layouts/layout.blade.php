@@ -31,6 +31,8 @@
             window.location.href = "/toggleDarkMode";
         }
 
+        alert({{ session('dark_mode') }});
+
     </script>
     </head>
     <body>
