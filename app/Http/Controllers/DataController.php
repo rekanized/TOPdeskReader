@@ -344,7 +344,7 @@ class DataController extends Controller
             if ($type == 'ticket'){
                 $dbQuery = $dbConnection->prepare(
                     "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
-                    FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
+                    FROM [incident__memogeschiedenis] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'VERZOEK'
                     ORDER BY comments.dataanmk DESC"
@@ -353,7 +353,7 @@ class DataController extends Controller
             else if ($type == 'change'){
                 $dbQuery = $dbConnection->prepare(
                     "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
-                    FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
+                    FROM [change__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'DESCRIPTION'
                     ORDER BY comments.dataanmk DESC"
@@ -362,7 +362,7 @@ class DataController extends Controller
             else if ($type == 'changeactivity'){
                 $dbQuery = $dbConnection->prepare(
                     "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
-                    FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
+                    FROM [changeactivity__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'DESCRIPTION'
                     ORDER BY comments.dataanmk DESC"
@@ -408,7 +408,7 @@ class DataController extends Controller
             if ($type == 'ticket'){
                 $dbQuery = $dbConnection->prepare(
                     "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
-                    FROM [topdesk].[dbo].[incident__memogeschiedenis] AS comments LEFT OUTER JOIN
+                    FROM [incident__memogeschiedenis] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'ACTIE'
                     ORDER BY comments.dataanmk DESC"
@@ -417,7 +417,7 @@ class DataController extends Controller
             else if ($type == 'change'){
                 $dbQuery = $dbConnection->prepare(
                     "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
-                    FROM [topdesk].[dbo].[change__memo_history] AS comments LEFT OUTER JOIN
+                    FROM [change__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'ACTION'
                     ORDER BY comments.dataanmk DESC"
@@ -426,7 +426,7 @@ class DataController extends Controller
             else if ($type == 'changeactivity'){
                 $dbQuery = $dbConnection->prepare(
                     "SELECT comments.memotekst, CONVERT(VARCHAR,comments.dataanmk,120) AS dataanmk, comments.invisibleforcaller, comments.origin, comments.veldnaam, operator.naam
-                    FROM [topdesk].[dbo].[changeactivity__memo_history] AS comments LEFT OUTER JOIN
+                    FROM [changeactivity__memo_history] AS comments LEFT OUTER JOIN
                     gebruiker AS operator ON comments.gebruikerid = operator.unid
                     WHERE parentid = :id AND veldnaam = 'ACTION'
                     ORDER BY comments.dataanmk DESC"
