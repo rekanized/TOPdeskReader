@@ -1,3 +1,6 @@
+## Feel free to buy me a coffee if you use this =)
+https://buymeacoffee.com/rekanized
+
 ## Welcome to deskTOP (This is a TOPdesk Database Reader)
 This project is created since our company has a old TOPdesk instance that we need to be able to read.<br>
 This lets you read Tickets, Changes and ChangeActivites at the moment.<br>
