@@ -5,7 +5,6 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "ext-pdo_sqlsrv": "*",
         "php": "^8.5",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0"
@@ -31,6 +30,12 @@
         }
     },
     "scripts": {
+        "pre-install-cmd": [
+            "@php scripts/install-sqlsrv.php"
+        ],
+        "pre-update-cmd": [
+            "@php scripts/install-sqlsrv.php"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

@@ -25,15 +25,14 @@ If you have any questions feel free to ask for assistance.
 ## Installation
 
 1. Install PHP 8.5 and Composer. Enable `curl`, `fileinfo`, `mbstring`, `openssl`, `pdo_sqlite`, `sqlite3`, and the XML extensions in the PHP runtime used by the application.
-2. Install Microsoft's [PHP SQL Server drivers](https://github.com/microsoft/msphpsql/releases) version 5.13 or newer and the required Microsoft ODBC driver. Enable `pdo_sqlsrv` in the same PHP 8.5 runtime. On Windows, match the extension's architecture and thread safety to your PHP build. On Linux and macOS, follow [Microsoft's installation guide](https://github.com/microsoft/msphpsql/blob/dev/Linux-mac-install.md).
-3. Check the runtime and install the locked PHP packages:
+2. Install Microsoft ODBC Driver for SQL Server 17 or 18. This system driver is required by `pdo_sqlsrv` and is installed outside Composer. On Linux and macOS, also install the PHP development and build tools described in [Microsoft's installation guide](https://github.com/microsoft/msphpsql/blob/dev/Linux-mac-install.md).
+3. Install the locked PHP packages and the Microsoft PDO SQL Server extension:
 
    ```sh
-   php -v
-   php -m
    composer install
-   composer check-platform-reqs
    ```
+
+   The Composer install script downloads a verified [PIE](https://github.com/php/pie) release, installs `microsoft/pdo_sqlsrv` 5.13.3 for the PHP 8.5 runtime running Composer, and verifies that a new PHP process can load the driver. The install fails if the driver cannot be enabled. Run Composer with the same PHP installation used to serve the app. Composer's `--no-scripts` option skips this setup.
 
 4. Copy `.env.example` to `.env` and set `MSSQL_SERVER`, `MSSQL_DATABASE`, `MSSQL_USERNAME`, and `MSSQL_PASSWORD`. The app uses this SQL Server connection to read TOPdesk data. Laravel uses its separate SQLite connection for sessions and cache.
 5. Generate the application key and create Laravel's SQLite tables:
