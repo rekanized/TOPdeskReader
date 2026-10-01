@@ -34,7 +34,7 @@ If you have any questions feel free to ask for assistance.
 
    The Composer install script downloads a verified [PIE](https://github.com/php/pie) release, installs `microsoft/pdo_sqlsrv` 5.13.3 for the PHP 8.5 runtime running Composer, and verifies that a new PHP process can load the driver. The install fails if the driver cannot be enabled. Run Composer with the same PHP installation used to serve the app. Composer's `--no-scripts` option skips this setup.
 
-   On Linux, PDO must load before `pdo_sqlsrv`. The installer enables the driver in `zz-pdo_sqlsrv.ini` in PHP's scanned ini directory and removes a misplaced entry from the main `php.ini`. It may ask for sudo access if those files are system-owned. If PHP still reports `undefined symbol: php_pdo_unregister_driver`, run `php --ini` and check that `zz-pdo_sqlsrv.ini` loads after the ini file enabling PDO.
+   On Linux, PDO must load before `pdo_sqlsrv`. The installer enables the driver in `zz-pdo_sqlsrv.ini` in PHP's scanned ini directory and removes a misplaced entry from the main `php.ini`. It may ask for sudo access if those files are system-owned. If PHP still reports `undefined symbol: php_pdo_unregister_driver`, run `php --ini` and check that `zz-pdo_sqlsrv.ini` is readable (mode `0644`) and loads after the ini file enabling PDO.
 
 4. Copy `.env.example` to `.env` and set `MSSQL_SERVER`, `MSSQL_DATABASE`, `MSSQL_USERNAME`, and `MSSQL_PASSWORD`. The app uses this SQL Server connection to read TOPdesk data. Laravel uses its separate SQLite connection for sessions and cache.
 5. Generate the application key and create Laravel's SQLite tables:

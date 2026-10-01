@@ -80,9 +80,28 @@ function enableLinuxSqlsrv(): bool
     }
 
     if (is_file($driverIni)) {
-        $settings = file_get_contents($driverIni);
+        if (! is_readable($driverIni)) {
+            $process = proc_open(
+                ['sudo', 'chmod', '0644', '--', $driverIni],
+                [0 => STDIN, 1 => STDOUT, 2 => STDERR],
+                $pipes,
+            );
 
-        return is_string($settings) && preg_match($extensionLine, $settings) === 1;
+            if (! is_resource($process) || proc_close($process) !== 0) {
+                return false;
+            }
+
+            clearstatcache(true, $driverIni);
+        }
+
+        $settings = is_readable($driverIni) ? file_get_contents($driverIni) : false;
+
+        if (! is_string($settings)) {
+            return false;
+        }
+
+        return preg_match($extensionLine, $settings) === 1
+            || writeLinuxIni($driverIni, rtrim($settings).PHP_EOL.'extension=pdo_sqlsrv'.PHP_EOL);
     }
 
     return writeLinuxIni($driverIni, 'extension=pdo_sqlsrv'.PHP_EOL);
@@ -191,7 +210,7 @@ if (! sqlsrvIsAvailableInFreshProcess($descriptors)) {
     fwrite(STDERR, "PIE finished, but a new PHP process cannot load pdo_sqlsrv.\n");
 
     if (PHP_OS_FAMILY === 'Linux') {
-        fwrite(STDERR, "Run php --ini. Remove any extension=pdo_sqlsrv line from the main php.ini and enable it in a scanned ini file named zz-pdo_sqlsrv.ini, after the ini file that loads PDO.\n");
+        fwrite(STDERR, "Run php --ini. Ensure zz-pdo_sqlsrv.ini in the scanned ini directory is readable by PHP (mode 0644), contains extension=pdo_sqlsrv, and loads after PDO. Remove any extension=pdo_sqlsrv line from the main php.ini.\n");
     } else {
         fwrite(STDERR, "Check the CLI php.ini and extension dependencies.\n");
     }
