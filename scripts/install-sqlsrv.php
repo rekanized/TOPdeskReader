@@ -134,11 +134,13 @@ $descriptors = [0 => STDIN, 1 => STDOUT, 2 => STDERR];
 
 if (sqlsrvIsAvailable()) {
     fwrite(STDOUT, "PDO SQL Server driver is already available.\n");
+    fwrite(STDOUT, "Restart PHP-FPM or the web server after changing PHP extensions or ini files.\n");
     exit(0);
 }
 
 if (PHP_OS_FAMILY === 'Linux' && enableLinuxSqlsrv() && sqlsrvIsAvailableInFreshProcess($descriptors)) {
     fwrite(STDOUT, "PDO SQL Server driver is now available.\n");
+    fwrite(STDOUT, "Restart PHP-FPM or the web server so web requests load the driver.\n");
     exit(0);
 }
 
@@ -242,3 +244,4 @@ if (! sqlsrvIsAvailableInFreshProcess($descriptors)) {
 }
 
 fwrite(STDOUT, "PDO SQL Server driver is available.\n");
+fwrite(STDOUT, "Restart PHP-FPM or the web server so web requests load the driver.\n");
