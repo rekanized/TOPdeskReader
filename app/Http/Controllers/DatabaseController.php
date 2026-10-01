@@ -19,8 +19,9 @@ class DatabaseController extends Controller
         }
 
         try {
+            $trustServerCertificate = config('topdesk.trust_server_certificate', true) ? 'true' : 'false';
             $conn = $this->createPdo(
-                "sqlsrv:server={$server};Database={$database}",
+                "sqlsrv:Server={$server};Database={$database};Encrypt=true;TrustServerCertificate={$trustServerCertificate}",
                 (string) config('topdesk.username'),
                 (string) config('topdesk.password')
             );

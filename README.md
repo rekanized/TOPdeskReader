@@ -13,6 +13,7 @@ MSSQL_SERVER=""
 MSSQL_DATABASE=""
 MSSQL_USERNAME=""
 MSSQL_PASSWORD=""
+MSSQL_TRUST_SERVER_CERTIFICATE=true
 ```
 <br>
 <br>
@@ -38,7 +39,7 @@ If you have any questions feel free to ask for assistance.
 
    On Linux, PDO must load before `pdo_sqlsrv`. The installer enables the driver in `zz-pdo_sqlsrv.ini` in PHP's scanned ini directory and removes a misplaced entry from the main `php.ini`. It may ask for sudo access if those files are system-owned. If PHP still reports `undefined symbol: php_pdo_unregister_driver`, run `php --ini` and check that `zz-pdo_sqlsrv.ini` is readable (mode `0644`) and loads after the ini file enabling PDO.
 
-4. Copy `.env.example` to `.env` and set `MSSQL_SERVER`, `MSSQL_DATABASE`, `MSSQL_USERNAME`, and `MSSQL_PASSWORD`. The app uses this SQL Server connection to read TOPdesk data. Laravel uses its separate SQLite connection for sessions and cache.
+4. Copy `.env.example` to `.env` and set `MSSQL_SERVER`, `MSSQL_DATABASE`, `MSSQL_USERNAME`, and `MSSQL_PASSWORD`. The app uses this SQL Server connection to read TOPdesk data. It enables encryption and sets `MSSQL_TRUST_SERVER_CERTIFICATE=true` by default so a self-signed SQL Server certificate is accepted without certificate validation. Set this value to `false` if the server has a trusted certificate. Laravel uses its separate SQLite connection for sessions and cache.
 5. Generate the application key and create Laravel's SQLite tables:
 
    ```sh

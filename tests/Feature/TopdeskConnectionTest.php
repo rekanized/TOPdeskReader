@@ -17,6 +17,7 @@ class TopdeskConnectionTest extends TestCase
             'database' => 'topdesk',
             'username' => 'reader',
             'password' => 'example-password',
+            'trust_server_certificate' => true,
         ]);
 
         $pdo = new class extends PDO
@@ -49,7 +50,7 @@ class TopdeskConnectionTest extends TestCase
 
         $this->assertSame($pdo, $database->connect());
         $this->assertSame(
-            ['sqlsrv:server=sql.example,1433;Database=topdesk', 'reader', 'example-password'],
+            ['sqlsrv:Server=sql.example,1433;Database=topdesk;Encrypt=true;TrustServerCertificate=true', 'reader', 'example-password'],
             $database->arguments
         );
         $this->assertSame(PDO::ERRMODE_EXCEPTION, $pdo->attributes[PDO::ATTR_ERRMODE]);
