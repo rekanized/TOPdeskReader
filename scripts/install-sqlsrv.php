@@ -15,8 +15,88 @@ function sqlsrvIsAvailable(): bool
         && in_array('sqlsrv', PDO::getAvailableDrivers(), true);
 }
 
+function sqlsrvIsAvailableInFreshProcess(array $descriptors): bool
+{
+    $check = proc_open(
+        [PHP_BINARY, '-r', 'exit(extension_loaded("pdo_sqlsrv") && in_array("sqlsrv", PDO::getAvailableDrivers(), true) ? 0 : 1);'],
+        $descriptors,
+        $pipes,
+    );
+
+    return is_resource($check) && proc_close($check) === 0;
+}
+
+function writeLinuxIni(string $path, string $contents): bool
+{
+    if ((is_file($path) && is_writable($path)) || (! file_exists($path) && is_writable(dirname($path)))) {
+        return file_put_contents($path, $contents, LOCK_EX) === strlen($contents);
+    }
+
+    $temporaryFile = tempnam(sys_get_temp_dir(), 'topdesk-sqlsrv-');
+
+    if ($temporaryFile === false || file_put_contents($temporaryFile, $contents) !== strlen($contents)) {
+        return false;
+    }
+
+    $command = is_file($path)
+        ? ['sudo', 'cp', '--', $temporaryFile, $path]
+        : ['sudo', 'install', '-m', '0644', $temporaryFile, $path];
+    $process = proc_open($command, [0 => STDIN, 1 => STDOUT, 2 => STDERR], $pipes);
+    $success = is_resource($process) && proc_close($process) === 0;
+    unlink($temporaryFile);
+
+    return $success;
+}
+
+function enableLinuxSqlsrv(): bool
+{
+    $module = rtrim((string) ini_get('extension_dir'), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'pdo_sqlsrv.so';
+
+    if (! is_file($module)) {
+        return false;
+    }
+
+    $mainIni = php_ini_loaded_file();
+    $scanned = php_ini_scanned_files();
+    $firstScannedIni = is_string($scanned) ? trim(explode(',', $scanned)[0]) : '';
+
+    if ($firstScannedIni === '') {
+        return false;
+    }
+
+    $driverIni = dirname($firstScannedIni).DIRECTORY_SEPARATOR.'zz-pdo_sqlsrv.ini';
+    $extensionLine = '/^[ \t]*extension[ \t]*=[ \t]*["\']?pdo_sqlsrv(?:\.so)?["\']?[ \t]*(?:;[^\r\n]*)?(?:\r?\n|$)/mi';
+
+    if (is_string($mainIni)) {
+        $settings = file_get_contents($mainIni);
+
+        if (is_string($settings)) {
+            $cleanSettings = preg_replace($extensionLine, '', $settings);
+
+            if ($cleanSettings === null || ($cleanSettings !== $settings && ! writeLinuxIni($mainIni, $cleanSettings))) {
+                return false;
+            }
+        }
+    }
+
+    if (is_file($driverIni)) {
+        $settings = file_get_contents($driverIni);
+
+        return is_string($settings) && preg_match($extensionLine, $settings) === 1;
+    }
+
+    return writeLinuxIni($driverIni, 'extension=pdo_sqlsrv'.PHP_EOL);
+}
+
+$descriptors = [0 => STDIN, 1 => STDOUT, 2 => STDERR];
+
 if (sqlsrvIsAvailable()) {
     fwrite(STDOUT, "PDO SQL Server driver is already available.\n");
+    exit(0);
+}
+
+if (PHP_OS_FAMILY === 'Linux' && enableLinuxSqlsrv() && sqlsrvIsAvailableInFreshProcess($descriptors)) {
+    fwrite(STDOUT, "PDO SQL Server driver is now available.\n");
     exit(0);
 }
 
@@ -63,9 +143,14 @@ if (! is_file($pie) || ! hash_equals(PIE_SHA256, hash_file('sha256', $pie))) {
 
 fwrite(STDOUT, 'Installing Microsoft PDO SQL Server driver for '.PHP_BINARY."...\n");
 
-$descriptors = [0 => STDIN, 1 => STDOUT, 2 => STDERR];
+$pieCommand = [PHP_BINARY, $pie, 'install', 'microsoft/pdo_sqlsrv:5.13.3', '--no-interaction'];
+
+if (PHP_OS_FAMILY === 'Linux') {
+    $pieCommand[] = '--skip-enable-extension';
+}
+
 $process = proc_open(
-    [PHP_BINARY, $pie, 'install', 'microsoft/pdo_sqlsrv:5.13.3', '--no-interaction'],
+    $pieCommand,
     $descriptors,
     $pipes,
     dirname(__DIR__),
@@ -87,41 +172,12 @@ if (! is_resource($process) || proc_close($process) !== 0) {
     exit(1);
 }
 
-function sqlsrvIsAvailableInFreshProcess(array $descriptors): bool
-{
-    $check = proc_open(
-        [PHP_BINARY, '-r', 'exit(extension_loaded("pdo_sqlsrv") && in_array("sqlsrv", PDO::getAvailableDrivers(), true) ? 0 : 1);'],
-        $descriptors,
-        $pipes,
-    );
-
-    return is_resource($check) && proc_close($check) === 0;
-}
-
 if (! sqlsrvIsAvailableInFreshProcess($descriptors)) {
     // PIE may consider the package installed even when this PHP ini was later changed.
     $ini = php_ini_loaded_file();
 
     if (PHP_OS_FAMILY === 'Linux') {
-        // On Linux, PDO may be loaded from a scanned ini. The main php.ini is read
-        // first, so pdo_sqlsrv must instead be enabled in a later scanned ini.
-        $settings = is_string($ini) ? file_get_contents($ini) : false;
-        $enabledInMainIni = is_string($settings)
-            && preg_match('/^\s*extension\s*=\s*[^\r\n]*pdo_sqlsrv/im', $settings);
-
-        if (! $enabledInMainIni) {
-            $scanned = php_ini_scanned_files();
-            $firstScannedIni = is_string($scanned) ? trim(explode(',', $scanned)[0]) : '';
-            $scanDirectory = $firstScannedIni !== '' ? dirname($firstScannedIni) : null;
-
-            if (is_string($scanDirectory) && is_writable($scanDirectory)) {
-                $driverIni = $scanDirectory.DIRECTORY_SEPARATOR.'zz-pdo_sqlsrv.ini';
-
-                if (! file_exists($driverIni)) {
-                    file_put_contents($driverIni, 'extension=pdo_sqlsrv'.PHP_EOL, LOCK_EX);
-                }
-            }
-        }
+        enableLinuxSqlsrv();
     } elseif (is_string($ini) && is_writable($ini)) {
         $settings = file_get_contents($ini);
 
