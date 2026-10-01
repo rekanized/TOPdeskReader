@@ -25,7 +25,7 @@ If you have any questions feel free to ask for assistance.
 ## Installation
 
 1. Install PHP 8.5 and Composer. Enable `curl`, `fileinfo`, `mbstring`, `openssl`, `pdo_sqlite`, `sqlite3`, and the XML extensions in the PHP runtime used by the application.
-2. Install Microsoft ODBC Driver for SQL Server 17 or 18. This system driver is required by `pdo_sqlsrv` and is installed outside Composer. On Linux and macOS, also install the PHP development and build tools described in [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/php/installation-tutorial-linux-mac). Linux builds need the unixODBC development headers (`sql.h`): install `unixodbc-dev` on Debian/Ubuntu or Alpine, or `unixODBC-devel` on RHEL/Fedora. On macOS, install `unixodbc` with Homebrew. These system packages require an OS package manager and usually administrator access; Composer cannot install them.
+2. Install [Microsoft ODBC Driver for SQL Server 17 or 18](https://learn.microsoft.com/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server). The `msodbcsql18` or `msodbcsql17` system package is required by `pdo_sqlsrv`; `unixODBC-devel` alone does not provide it. On Linux, confirm that `odbcinst -q -d` lists `ODBC Driver 18 for SQL Server` or `ODBC Driver 17 for SQL Server`. On Linux and macOS, also install the PHP development and build tools described in [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/php/installation-tutorial-linux-mac). Linux builds need the unixODBC development headers (`sql.h`): install `unixodbc-dev` on Debian/Ubuntu or Alpine, or `unixODBC-devel` on RHEL/Fedora. On macOS, install `unixodbc` with Homebrew. These system packages require an OS package manager and usually administrator access; Composer cannot install them.
 3. Install the locked PHP packages and the Microsoft PDO SQL Server extension:
 
    ```sh
@@ -48,4 +48,8 @@ If you have any questions feel free to ask for assistance.
 
 Run `php artisan topdesk:check` on the server to verify that the PHP driver connects to the configured database and can read the tables used by the reader. This command only issues `SELECT` queries. Then search for a known ticket and open its detail page to check the data and column-specific queries against your TOPdesk version. If you cache Laravel's configuration, run `php artisan config:cache` again after changing the MSSQL settings in `.env`.
 
+If `php -m` lists `pdo_sqlsrv` but a web request logs `could not find driver`, check whether `php artisan topdesk:check` succeeds. A CLI success with a web failure means the web PHP runtime needs the extension enabled or restarted. Restart the PHP-FPM service (often `sudo systemctl restart php-fpm` on RHEL-based systems) or the Apache PHP process serving the app. The Laravel error log records that process's PHP SAPI, version, loaded and scanned ini files, and available PDO drivers for this error, without logging database credentials.
+
 Run `php artisan test` to check the application without a TOPdesk database. The pages use static assets in `public/` and require no asset build step.
+
+Laravel must be able to write to `storage` and `bootstrap/cache`. Ensure both the deployment user running Artisan and the web PHP user have write access. If `storage/logs/laravel.log` reports `Permission denied`, correct the ownership or shared group permissions for those paths before retrying `php artisan topdesk:check`; avoid making them world-writable.

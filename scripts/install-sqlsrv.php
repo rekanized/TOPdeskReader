@@ -9,6 +9,29 @@ if (PHP_VERSION_ID < 80500 || PHP_VERSION_ID >= 90000) {
     exit(1);
 }
 
+if (PHP_OS_FAMILY === 'Linux') {
+    $installedDrivers = '';
+    $odbcExitCode = -1;
+    $odbc = @proc_open(
+        ['odbcinst', '-q', '-d'],
+        [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+        $odbcPipes,
+    );
+
+    if (is_resource($odbc)) {
+        fclose($odbcPipes[0]);
+        $installedDrivers = stream_get_contents($odbcPipes[1]) ?: '';
+        fclose($odbcPipes[1]);
+        fclose($odbcPipes[2]);
+        $odbcExitCode = proc_close($odbc);
+    }
+
+    if ($odbcExitCode !== 0 || ! preg_match('/^\[ODBC Driver (17|18) for SQL Server\]\s*$/m', $installedDrivers)) {
+        fwrite(STDERR, "Microsoft ODBC Driver 17 or 18 for SQL Server is not registered on this Linux host. Install msodbcsql18 from Microsoft's repository, then verify it with odbcinst -q -d. See https://learn.microsoft.com/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server\n");
+        exit(1);
+    }
+}
+
 function sqlsrvIsAvailable(): bool
 {
     return extension_loaded('pdo_sqlsrv')
