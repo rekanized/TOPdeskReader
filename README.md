@@ -23,27 +23,28 @@ If you have any questions feel free to ask for assistance.
 
 
 ## Installation
-1. Copy the ".env.example" file and name it ".env" and then edit the file and add your database info to the MSSQL parameters (bottom of the file)
-2. Install PHP.
-3. Download the SQL Server Drivers
-Download the appropriate drivers for your platform (Windows, Linux, or macOS) from Microsoft's official GitHub repository:<br>
-    1. <b>Windows</b>
-        1. Go to <a href="https://github.com/microsoft/msphpsql/releases">Microsoft Drivers for PHP for SQL Server.</a>
-        2. Download the latest release for your PHP version (make sure to match your PHP version, like PHP 7.4, 8.0, etc.).
-        3. Uncomment these in your php.ini
-            1. extension=curl
-            2. extension=fileinfo
-            3. extension=mbstring
-            4. extension=openssl
-            5. extension=pdo_sqlite
-            6. extension=sqlite3
-        4. Add these
-            1. extension=sqlsrv
-            2. extension=pdo_sqlsrv
-    2. <b>Linux/macOS:</b>
-        1. Follow <a href="https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac?view=sql-server-ver15">Microsoft's documentation</a> to install ODBC drivers and configure SQLSRV and PDO_SQLSRV extensions.
-        2. Run ``sudo apt install -y php8.2 php8.2-cli php8.2-fpm php8.2-mysql php8.2-xml php8.2-mbstring php8.2-curl php8.2-zip php8.2-bcmath php8.2-gd php8.2-soap`` Change to your version of PHP
-4. Run ``composer install`` from the root directory
-6. Run ``php artisan key:generate`` from the root directory (this generates your APP_KEY in the .env file)
-7. Run ``php artisan migrate`` from the root directory (just say 'yes' to everything, it will generate the database for laravel sessions)
-8. Run ``php artisan serve`` from the root directory to see if it runs correctly, then publish it in your favorite WebServer (Nginx/Apache) the root directory to have in the webserver config = '/public'
+
+1. Install PHP 8.5 and Composer. Enable `curl`, `fileinfo`, `mbstring`, `openssl`, `pdo_sqlite`, `sqlite3`, and the XML extensions in the PHP runtime used by the application.
+2. Install Microsoft's [PHP SQL Server drivers](https://github.com/microsoft/msphpsql/releases) version 5.13 or newer and the required Microsoft ODBC driver. Enable `pdo_sqlsrv` in the same PHP 8.5 runtime. On Windows, match the extension's architecture and thread safety to your PHP build. On Linux and macOS, follow [Microsoft's installation guide](https://github.com/microsoft/msphpsql/blob/dev/Linux-mac-install.md).
+3. Check the runtime and install the locked PHP packages:
+
+   ```sh
+   php -v
+   php -m
+   composer install
+   composer check-platform-reqs
+   ```
+
+4. Copy `.env.example` to `.env` and set `MSSQL_SERVER`, `MSSQL_DATABASE`, `MSSQL_USERNAME`, and `MSSQL_PASSWORD`. The app uses this SQL Server connection to read TOPdesk data. Laravel uses its separate SQLite connection for sessions and cache.
+5. Generate the application key and create Laravel's SQLite tables:
+
+   ```sh
+   php artisan key:generate
+   php artisan migrate
+   ```
+
+6. Run `php artisan serve`. For a web server deployment, point the document root at `public/`.
+
+Run `php artisan topdesk:check` on the server to verify that the PHP driver connects to the configured database and can read the tables used by the reader. This command only issues `SELECT` queries. Then search for a known ticket and open its detail page to check the data and column-specific queries against your TOPdesk version. If you cache Laravel's configuration, run `php artisan config:cache` again after changing the MSSQL settings in `.env`.
+
+Run `php artisan test` to check the application without a TOPdesk database. The pages use static assets in `public/` and require no asset build step.

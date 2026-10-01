@@ -2,27 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use PDO as PDO;
+use PDO;
+use PDOException;
 
 class DatabaseController extends Controller
 {
-    public function connect(){
+    public function connect(): ?PDO
+    {
+        $server = config('topdesk.server');
+        $database = config('topdesk.database');
+
+        if (! $server || ! $database) {
+            \Log::error('TOPdesk SQL Server and database must be configured.');
+
+            return null;
+        }
+
         try {
-            $conn = new PDO(
-                "sqlsrv:server=".env('MSSQL_SERVER') . ";Database=".env('MSSQL_DATABASE'),
-                env('MSSQL_USERNAME'),
-                env('MSSQL_PASSWORD')
+            $conn = $this->createPdo(
+                "sqlsrv:server={$server};Database={$database}",
+                (string) config('topdesk.username'),
+                (string) config('topdesk.password')
             );
-            // Set error mode to exception
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $conn;
-        } catch (\PDOException $e) {
-            // Log the error for better error tracking
-            \Log::error("Database connection failed: " . $e->getMessage());
+        } catch (PDOException $e) {
+            \Log::error('Database connection failed: '.$e->getMessage());
 
-            // Return null or false so that the calling code can handle the failure
             return null;
         }
+    }
+
+    protected function createPdo(string $dsn, string $username, string $password): PDO
+    {
+        return new PDO($dsn, $username, $password);
     }
 }
