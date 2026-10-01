@@ -72,7 +72,18 @@ $process = proc_open(
 );
 
 if (! is_resource($process) || proc_close($process) !== 0) {
-    fwrite(STDERR, "PIE could not install pdo_sqlsrv. Check the Microsoft ODBC driver and PIE build prerequisites for this system.\n");
+    fwrite(STDERR, "PIE could not install pdo_sqlsrv.\n");
+
+    if (PHP_OS_FAMILY === 'Linux') {
+        fwrite(STDERR, "If the compiler reports missing sql.h, install unixODBC development headers, then run composer install again:\n");
+        fwrite(STDERR, "  Debian/Ubuntu: sudo apt-get install unixodbc-dev\n");
+        fwrite(STDERR, "  RHEL/Fedora:   sudo dnf install unixODBC-devel\n");
+        fwrite(STDERR, "  Alpine:        sudo apk add unixodbc-dev\n");
+    } elseif (PHP_OS_FAMILY === 'Darwin') {
+        fwrite(STDERR, "If the compiler reports missing sql.h, install unixODBC with brew install unixodbc.\n");
+    }
+
+    fwrite(STDERR, "Also ensure Microsoft ODBC Driver for SQL Server 17 or 18 is installed.\n");
     exit(1);
 }
 
@@ -91,7 +102,27 @@ if (! sqlsrvIsAvailableInFreshProcess($descriptors)) {
     // PIE may consider the package installed even when this PHP ini was later changed.
     $ini = php_ini_loaded_file();
 
-    if (is_string($ini) && is_writable($ini)) {
+    if (PHP_OS_FAMILY === 'Linux') {
+        // On Linux, PDO may be loaded from a scanned ini. The main php.ini is read
+        // first, so pdo_sqlsrv must instead be enabled in a later scanned ini.
+        $settings = is_string($ini) ? file_get_contents($ini) : false;
+        $enabledInMainIni = is_string($settings)
+            && preg_match('/^\s*extension\s*=\s*[^\r\n]*pdo_sqlsrv/im', $settings);
+
+        if (! $enabledInMainIni) {
+            $scanned = php_ini_scanned_files();
+            $firstScannedIni = is_string($scanned) ? trim(explode(',', $scanned)[0]) : '';
+            $scanDirectory = $firstScannedIni !== '' ? dirname($firstScannedIni) : null;
+
+            if (is_string($scanDirectory) && is_writable($scanDirectory)) {
+                $driverIni = $scanDirectory.DIRECTORY_SEPARATOR.'zz-pdo_sqlsrv.ini';
+
+                if (! file_exists($driverIni)) {
+                    file_put_contents($driverIni, 'extension=pdo_sqlsrv'.PHP_EOL, LOCK_EX);
+                }
+            }
+        }
+    } elseif (is_string($ini) && is_writable($ini)) {
         $settings = file_get_contents($ini);
 
         if (is_string($settings) && ! preg_match('/^\s*extension\s*=\s*[^\r\n]*pdo_sqlsrv/im', $settings)) {
@@ -101,7 +132,14 @@ if (! sqlsrvIsAvailableInFreshProcess($descriptors)) {
 }
 
 if (! sqlsrvIsAvailableInFreshProcess($descriptors)) {
-    fwrite(STDERR, "PIE finished, but a new PHP process cannot load pdo_sqlsrv. Check the CLI php.ini and extension dependencies.\n");
+    fwrite(STDERR, "PIE finished, but a new PHP process cannot load pdo_sqlsrv.\n");
+
+    if (PHP_OS_FAMILY === 'Linux') {
+        fwrite(STDERR, "Run php --ini. Remove any extension=pdo_sqlsrv line from the main php.ini and enable it in a scanned ini file named zz-pdo_sqlsrv.ini, after the ini file that loads PDO.\n");
+    } else {
+        fwrite(STDERR, "Check the CLI php.ini and extension dependencies.\n");
+    }
+
     exit(1);
 }
 

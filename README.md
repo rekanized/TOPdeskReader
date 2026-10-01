@@ -25,7 +25,7 @@ If you have any questions feel free to ask for assistance.
 ## Installation
 
 1. Install PHP 8.5 and Composer. Enable `curl`, `fileinfo`, `mbstring`, `openssl`, `pdo_sqlite`, `sqlite3`, and the XML extensions in the PHP runtime used by the application.
-2. Install Microsoft ODBC Driver for SQL Server 17 or 18. This system driver is required by `pdo_sqlsrv` and is installed outside Composer. On Linux and macOS, also install the PHP development and build tools described in [Microsoft's installation guide](https://github.com/microsoft/msphpsql/blob/dev/Linux-mac-install.md).
+2. Install Microsoft ODBC Driver for SQL Server 17 or 18. This system driver is required by `pdo_sqlsrv` and is installed outside Composer. On Linux and macOS, also install the PHP development and build tools described in [Microsoft's installation guide](https://learn.microsoft.com/sql/connect/php/installation-tutorial-linux-mac). Linux builds need the unixODBC development headers (`sql.h`): install `unixodbc-dev` on Debian/Ubuntu or Alpine, or `unixODBC-devel` on RHEL/Fedora. On macOS, install `unixodbc` with Homebrew. These system packages require an OS package manager and usually administrator access; Composer cannot install them.
 3. Install the locked PHP packages and the Microsoft PDO SQL Server extension:
 
    ```sh
@@ -33,6 +33,8 @@ If you have any questions feel free to ask for assistance.
    ```
 
    The Composer install script downloads a verified [PIE](https://github.com/php/pie) release, installs `microsoft/pdo_sqlsrv` 5.13.3 for the PHP 8.5 runtime running Composer, and verifies that a new PHP process can load the driver. The install fails if the driver cannot be enabled. Run Composer with the same PHP installation used to serve the app. Composer's `--no-scripts` option skips this setup.
+
+   On Linux, PDO must load before `pdo_sqlsrv`. If PHP reports `undefined symbol: php_pdo_unregister_driver`, run `php --ini`, remove any `extension=pdo_sqlsrv` entry from the main `php.ini`, and add `extension=pdo_sqlsrv` to `zz-pdo_sqlsrv.ini` in the directory shown as `Scan for additional .ini files in`. That file must be loaded after the ini file enabling PDO. The installer uses this order automatically when it can write to the scan directory; a system-owned directory may require an administrator to create the file.
 
 4. Copy `.env.example` to `.env` and set `MSSQL_SERVER`, `MSSQL_DATABASE`, `MSSQL_USERNAME`, and `MSSQL_PASSWORD`. The app uses this SQL Server connection to read TOPdesk data. Laravel uses its separate SQLite connection for sessions and cache.
 5. Generate the application key and create Laravel's SQLite tables:
